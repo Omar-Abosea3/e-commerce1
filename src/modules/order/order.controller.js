@@ -2,7 +2,7 @@ import cartModel from "../../../DB/models/cartModel.js";
 import couponModel from "../../../DB/models/couponModel.js";
 import orderModel from "../../../DB/models/orderModel.js";
 import productModel from "../../../DB/models/productModel.js";
-import createInvoice from "../../utils/PDFKit.js";
+import createInvoice from "../../utils/pdfKit.js";
 import isCouponValid from "../../utils/couponValidation.js";
 import sendEmail from "../../utils/email.js";
 import { asyncHandeller } from "../../utils/errorHandlig.js";
