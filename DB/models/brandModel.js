@@ -23,11 +23,6 @@ const brandSchema = new Schema({
             required:true
         }
     },
-    categoryId:{
-        type:Schema.Types.ObjectId,
-        ref:'Category',
-        required:true
-    },
     customId:String,
     createdBy:{
         type:Schema.Types.ObjectId,
