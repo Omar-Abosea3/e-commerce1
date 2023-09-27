@@ -27,7 +27,7 @@ export const validationCoreFunction = (schema) => {
 
 export const generalFields = {
     _id:joi.string().custom(validationObjectId),
-    name:joi.string().min(4).max(200),
+    name:joi.string().max(100),
     searchKey:joi.string(),
     email : joi.string().email({tlds:{allow:['com']}}).messages({
         'any.required':"emaile is required",

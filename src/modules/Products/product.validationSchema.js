@@ -4,7 +4,7 @@ import { generalFields } from "../../middleware/validation.js";
 export const addProductSchema = {
     body:joi.object({
         title:joi.string().min(5).max(200).required(),
-        desc:joi.string().min(20).max(1000),
+        desc:joi.string().min(20),
         appliedDiscount:joi.number().positive().min(1).max(100), 
         price:joi.number().positive().min(1).required(), 
         colors:joi.array().items(joi.string().required()), 
@@ -22,7 +22,7 @@ export const addProductSchema = {
 export const updateProductSchema = {
     body:joi.object({
         title:joi.string().min(5).max(200),
-        desc:joi.string().min(20).max(1000),
+        desc:joi.string().min(20),
         appliedDiscount:joi.number().positive().min(1).max(100), 
         price:joi.number().positive().min(1), 
         colors:joi.array().items(joi.string().required()), 
