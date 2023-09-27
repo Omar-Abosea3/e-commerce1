@@ -38,13 +38,13 @@ export const addProduct = asyncHandeller(async (req, res, next) => {
         })
       );
     }
-    if (brand.subCategoryId != subCategoryId) {
-      return next(
-        new Error("not founded relation between this categories and brands", {
-          cause: 400,
-        })
-      );
-    }
+    // if (brand.subCategoryId != subCategoryId) {
+    //   return next(
+    //     new Error("not founded relation between this categories and brands", {
+    //       cause: 400,
+    //     })
+    //   );
+    // }
 
     const slug = slugify(title);
 
