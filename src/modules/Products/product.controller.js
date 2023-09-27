@@ -38,13 +38,6 @@ export const addProduct = asyncHandeller(async (req, res, next) => {
         })
       );
     }
-    // if (brand.subCategoryId != subCategoryId) {
-    //   return next(
-    //     new Error("not founded relation between this categories and brands", {
-    //       cause: 400,
-    //     })
-    //   );
-    // }
 
     const slug = slugify(title);
 
@@ -60,13 +53,13 @@ export const addProduct = asyncHandeller(async (req, res, next) => {
       const { secure_url, public_id } = await cloudinary.uploader.upload(
         file.path,
         {
-          folder: `${process.env.PROJECT_FOLDER}/Categories/${category.customId}/Subcategory/${subCategory.customId}/Brand/${brand.customId}/Products/${customId}`,
+          folder: `${process.env.PROJECT_FOLDER}/Categories/${category.customId}/Subcategory/${subCategory.customId}/Products/${customId}`,
         }
       );
       images.push({ secure_url, public_id });
       publicIds.push(public_id);
     }
-    req.imagePath = `${process.env.PROJECT_FOLDER}/Categories/${category.customId}/Subcategory/${subCategory.customId}/Brand/${brand.customId}/Products/${customId}`;
+    req.imagePath = `${process.env.PROJECT_FOLDER}/Categories/${category.customId}/Subcategory/${subCategory.customId}/Products/${customId}`;
 
     const productObject = {
       title,
@@ -172,7 +165,7 @@ export const updateProduct = asyncHandeller(async (req, res, next) => {
         const { secure_url, public_id } = await cloudinary.uploader.upload(
           file.path,
           {
-            folder: `${process.env.PROJECT_FOLDER}/Categories/${category.customId}/Subcategory/${subCategory.customId}/Brand/${brand.customId}/Products/${product.customId}`,
+            folder: `${process.env.PROJECT_FOLDER}/Categories/${category.customId}/Subcategory/${subCategory.customId}/Products/${product.customId}`,
           }
         );
         images.push({ secure_url, public_id });
@@ -199,11 +192,7 @@ export const deleteProduct = asyncHandeller(async (req, res, next) => {
       {
         path: "subCategoryId",
         select: "customId",
-      },
-      {
-        path: "brandId",
-        select: "customId",
-      },
+      }
     ]);
     if (!product) {
       return next(new Error("this product is not founded", { cause: 404 }));
@@ -221,7 +210,7 @@ export const deleteProduct = asyncHandeller(async (req, res, next) => {
     }
     await cloudinary.api.delete_resources(publicIds);
     await cloudinary.api.delete_folder(
-      `${process.env.PROJECT_FOLDER}/Categories/${product.categoryId.customId}/Subcategory/${product.subCategoryId.customId}/Brand/${product.brandId.customId}/Products/${product.customId}`
+      `${process.env.PROJECT_FOLDER}/Categories/${product.categoryId.customId}/Subcategory/${product.subCategoryId.customId}/Products/${product.customId}`
     );
     await reviewModel.deleteMany({productId:id});
     return res.status(200).json({ message: "deleted done", product });

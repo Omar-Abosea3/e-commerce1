@@ -155,11 +155,7 @@ export const deleteSubCategory = asyncHandeller(async (req, res, next) => {
     await cloudinary.api.delete_resources_by_prefix(
       `${process.env.PROJECT_FOLDER}/Categories/${subCategory.categoryId.customId}/Subcategory/${subCategory.customId}`
     );
-    await cloudinary.api.delete_folder(
-      `${process.env.PROJECT_FOLDER}/Categories/${subCategory.categoryId.customId}/Subcategory/${subCategory.customId}`
-    );
     await productModel.deleteMany({subCategoryId});
-    await brandModel.deleteMany({subCategoryId});
     return res
       .status(200)
       .json({ message: "deleted successfully", subCategory });
@@ -186,19 +182,8 @@ export const getOneSubCategory = asyncHandeller(async (req, res, next) => {
       select: "slug image",
     },
     {
-      path: "Brands",
-    },
-    {
       path: "Products",
       populate: [
-        {
-          path: "categoryId",
-          select: "slug",
-        },
-        {
-          path: "subCategoryId",
-          select: "slug",
-        },
         {
           path: "brandId",
           select: "name logo",

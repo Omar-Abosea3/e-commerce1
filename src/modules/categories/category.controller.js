@@ -114,27 +114,7 @@ export const deleteCategory = asyncHandeller(async (req, res, next) => {
       .populate([
         {
           path: "subCategories",
-        },
-        {
-          path: "Brands",
-        },
-        {
-          path: "Products",
-          populate: [
-            {
-              path: "categoryId",
-              select: "slug image",
-            },
-            {
-              path: "subCategoryId",
-              select: "slug image",
-            },
-            {
-              path: "brandId",
-              select: "slug logo",
-            },
-          ],
-        },
+        }
       ]);
 
     if (!category) {
@@ -156,8 +136,6 @@ export const deleteCategory = asyncHandeller(async (req, res, next) => {
     );
 
     await subCategoryModel.deleteMany({ categoryId });
-
-    await brandModel.deleteMany({ categoryId });
 
     await productModel.deleteMany({ categoryId });
 
@@ -181,15 +159,8 @@ export const getOneCategory = asyncHandeller(async (req, res, next) => {
       path: "subCategories",
     },
     {
-      path: "Brands",
-    },
-    {
       path: "Products",
       populate: [
-        {
-          path: "categoryId",
-          select: "slug image",
-        },
         {
           path: "subCategoryId",
           select: "slug image",

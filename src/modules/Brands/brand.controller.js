@@ -10,20 +10,6 @@ import systemRoles from "../../utils/systemRoles.js";
 
 export const addBrand = asyncHandeller(async (req, res, next) => {
     const { name } = req.body;
-    const { subCategoryId, categoryId } = req.query;
-
-    const subCategory = await subCategoryModel.findById(subCategoryId);
-    const category = await categoryModel.findById(categoryId);
-    if (!subCategory || !category) {
-      return next(new Error("invalid categories", { cause: 404 }));
-    }
-    if (subCategory.categoryId != categoryId) {
-      return next(
-        new Error("the subCategory not belongs to the category", {
-          cause: 400,
-        })
-      );
-    }
     const slug = slugify(name);
 
     if (!req.file) {
@@ -35,10 +21,10 @@ export const addBrand = asyncHandeller(async (req, res, next) => {
     const { secure_url, public_id } = await cloudinary.uploader.upload(
       req.file.path,
       {
-        folder: `${process.env.PROJECT_FOLDER}/Categories/${category.customId}/Subcategory/${subCategory.customId}/Brand/${customId}`,
+        folder: `${process.env.PROJECT_FOLDER}/Brands/${customId}`,
       }
     );
-    req.imagePath = `${process.env.PROJECT_FOLDER}/Categories/${category.customId}/Subcategory/${subCategory.customId}/Brand/${customId}`;
+    req.imagePath = `${process.env.PROJECT_FOLDER}/Brands/${customId}`;
 
     const brandObject = {
       name,
@@ -48,8 +34,6 @@ export const addBrand = asyncHandeller(async (req, res, next) => {
         public_id,
       },
       customId,
-      categoryId,
-      subCategoryId,
       createdBy:req.user._id
     };
 
@@ -64,7 +48,7 @@ export const addBrand = asyncHandeller(async (req, res, next) => {
 });
 
 export const updateBrand = asyncHandeller(async (req, res, next) => {
-    const { categoryId, subCategoryId, brandId } = req.query;
+    const { brandId } = req.query;
     const { name } = req.body;
     const brand = await brandModel.findById(brandId);
     if (!brand) {
@@ -74,24 +58,6 @@ export const updateBrand = asyncHandeller(async (req, res, next) => {
       return next(
         new Error("you dont have permission to edit this brand", { cause: 403 })
       );
-    }
-    const category = await categoryModel.findById(
-      categoryId || brand.categoryId
-    );
-    if (categoryId) {
-      if (!category) {
-        return next(new Error("not founded category", { cause: 404 }));
-      }
-      brand.categoryId = category;
-    }
-    const subCategory = await subCategoryModel.findById(
-      subCategoryId || brand.subCategoryId
-    );
-    if (subCategoryId) {
-      if (!subCategory) {
-        return next(new Error("not founded subcategory", { cause: 404 }));
-      }
-      brand.subCategoryId = subCategoryId;
     }
     if (name == brand.name || (await brandModel.findOne({ name }))) {
       return next(
@@ -108,7 +74,7 @@ export const updateBrand = asyncHandeller(async (req, res, next) => {
       const { secure_url, public_id } = await cloudinary.uploader.upload(
         req.file.path,
         {
-          folder: `${process.env.PROJECT_FOLDER}/Categories/${category.customId}/Subcategory/${subCategory.customId}/Brand/${brand.customId}`,
+          folder: `${process.env.PROJECT_FOLDER}/Brands/${brand.customId}`,
         }
       );
       brand.logo = { secure_url, public_id };
@@ -120,16 +86,7 @@ export const updateBrand = asyncHandeller(async (req, res, next) => {
 
 export const deleteBrand = asyncHandeller(async (req, res, next) => {
     const { brandId } = req.params;
-    const brand = await brandModel.findByIdAndDelete(brandId).populate([
-      {
-        path: "categoryId",
-        select: "customId",
-      },
-      {
-        path: "subCategoryId",
-        select: "customId",
-      },
-    ]);
+    const brand = await brandModel.findOne(brandId);
     if (!brand) {
       return next(new Error("not founded brand", { cause: 404 }));
     }
@@ -140,29 +97,21 @@ export const deleteBrand = asyncHandeller(async (req, res, next) => {
         })
       );
     }
+    await brandModel.deleteOne({_id:brandId});
 
-    const products = await productModel.deleteMany({ brandId , subCategoryId:brand.subCategoryId});
+    const products = await productModel.deleteMany({ brandId });
     await cloudinary.api.delete_resources_by_prefix(
-      `${process.env.PROJECT_FOLDER}/Categories/${brand.categoryId.customId}/Subcategory/${brand.subCategoryId.customId}/Brand/${brand.customId}`
+      `${process.env.PROJECT_FOLDER}/Brands/${brand.customId}`
     );
     await cloudinary.api.delete_folder(
-      `${process.env.PROJECT_FOLDER}/Categories/${brand.categoryId.customId}/Subcategory/${brand.subCategoryId.customId}/Brand/${brand.customId}`
+      `${process.env.PROJECT_FOLDER}/Brands/${brand.customId}`
     );
 
     return res.status(200).json({ message: "deleted done", brand });
 });
 
 export const getAllBrands = asyncHandeller(async (req, res, next) => {
-  const brands = await brandModel.find().populate([
-    {
-      path: "subCategoryId",
-      select: "slug image",
-    },
-    {
-      path: "categoryId",
-      select: "slug image",
-    },
-  ]).select('name slug logo subCategoryId categoryId');
+  const brands = await brandModel.find().select('name slug logo subCategoryId categoryId');
   if (brands.length == 0) {
     return next(new Error("not founded brands", { cause: 404 }));
   }
@@ -173,14 +122,6 @@ export const getAllBrands = asyncHandeller(async (req, res, next) => {
 export const getOneBrand = asyncHandeller(async (req, res, next) => {
   const { id } = req.params;
   const brand = await brandModel.findById(id).populate([
-    {
-      path: "subCategoryId",
-      select: "slug , image",
-    },
-    {
-      path: "categoryId",
-      select: "slug image",
-    },
     {
       path: "Products",
       select:'title desc colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'
@@ -196,16 +137,7 @@ export const searchBrand = asyncHandeller(async (req, res, next) => {
   const { searchKey } = req.query;
   const brands = await brandModel.find({
     name: { $regex: searchKey, $options: "i" },
-  }).populate([
-    {
-      path: "subCategoryId",
-      select: "slug image",
-    },
-    {
-      path: "categoryId",
-      select: "slug image",
-    },
-  ]).select('name slug logo subCategoryId categoryId');
+  }).select('name slug logo subCategoryId categoryId');
   if (brands.length == 0) {
     return next(new Error("brands not founded", { cause: 404 }));
   }

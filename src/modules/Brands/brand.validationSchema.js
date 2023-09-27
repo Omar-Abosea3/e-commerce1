@@ -6,12 +6,6 @@ export const addBrandSchema = {
     body:joi.object({
         name:generalFields.name,
     }).required().options({presence:'required'}),
-
-
-    query:joi.object({
-        categoryId:generalFields._id,
-        subCategoryId:generalFields._id
-    }).required().options({presence:'required'})
 }
 
 export const updateBrandSchema = {
@@ -20,8 +14,6 @@ export const updateBrandSchema = {
     }).required().options({presence:'required'}),
 
     query:joi.object({
-        categoryId:generalFields._id,
-        subCategoryId:generalFields._id,
         brandId:generalFields._id.required(),
     }).required()
 }
