@@ -80,5 +80,12 @@ export const generalFields = {
     state:joi.string().min(3).max(20),
     token:joi.string().required(),
     reviewRate:joi.number().min(1).max(5),
-    reviewComment:joi.string().min(5).max(255)
+    reviewComment:joi.string().min(5).max(255),
+    title:joi.string().min(5).max(200),
+    desc:joi.string().min(20),
+    appliedDiscount:joi.number().positive().min(1).max(100), 
+    price:joi.number().positive().min(1), 
+    colors:joi.array().items(joi.string().required()), 
+    sizes:joi.array().items(joi.string().required()),  
+    stok:joi.number().integer().positive().min(1),
 }

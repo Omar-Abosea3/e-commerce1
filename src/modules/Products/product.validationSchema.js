@@ -3,13 +3,13 @@ import { generalFields } from "../../middleware/validation.js";
 
 export const addProductSchema = {
     body:joi.object({
-        title:joi.string().min(5).max(200).required(),
-        desc:joi.string().min(20),
-        appliedDiscount:joi.number().positive().min(1).max(100), 
-        price:joi.number().positive().min(1).required(), 
-        colors:joi.array().items(joi.string().required()), 
-        sizes:joi.array().items(joi.string().required()),  
-        stok:joi.number().integer().positive().min(1).required(),
+        title:generalFields.title.required(),
+        desc:generalFields.desc.required(),
+        appliedDiscount:generalFields.appliedDiscount, 
+        price:generalFields.price.required(), 
+        colors:generalFields.colors, 
+        sizes:generalFields.sizes,  
+        stok:generalFields.stok.required(),
     }).required(),
 
     query:joi.object({
@@ -21,13 +21,13 @@ export const addProductSchema = {
 
 export const updateProductSchema = {
     body:joi.object({
-        title:joi.string().min(5).max(200),
-        desc:joi.string().min(20) ,
-        appliedDiscount:joi.number().positive().min(1).max(100), 
-        price:joi.number().positive().min(1), 
-        colors:joi.array().items(joi.string().required()), 
-        sizes:joi.array().items(joi.string().required()),  
-        stok:joi.number().integer().positive().min(1),
+        title:generalFields.title,
+        desc:generalFields.desc,
+        appliedDiscount:generalFields.appliedDiscount, 
+        price:generalFields.price, 
+        colors:generalFields.colors, 
+        sizes:generalFields.sizes,  
+        stok:generalFields.stok,
     }).required().options({presence:'optional'}),
 
     query:joi.object({
