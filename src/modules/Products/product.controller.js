@@ -41,7 +41,7 @@ export const addProduct = asyncHandeller(async (req, res, next) => {
 
     const slug = slugify(title);
 
-    const priceAfterDiscount = price - ((appliedDiscount || 0) / 100) * price;
+    const priceAfterDiscount = Math.round(price - ((appliedDiscount || 0) / 100) * price);
 
     if (!req.files?.length) {
       return next(new Error("please upload pictures", { cause: 400 }));
@@ -144,18 +144,18 @@ export const updateProduct = asyncHandeller(async (req, res, next) => {
     if (stok) product.stok = stok;
 
     if (appliedDiscount && price) {
-      const priceAfterDiscount = price - ((appliedDiscount || 0) / 100) * price;
+      const priceAfterDiscount = Math.round(price - ((appliedDiscount || 0) / 100) * price);
       product.priceAfterDiscount = priceAfterDiscount;
       product.price = price;
       product.appliedDiscount = appliedDiscount;
     } else if (price) {
       const priceAfterDiscount =
-        price - ((product.appliedDiscount || 0) / 100) * price;
+        Math.round(price - ((product.appliedDiscount || 0) / 100) * price);
       product.priceAfterDiscount = priceAfterDiscount;
       product.price = price;
     } else if (appliedDiscount) {
       const priceAfterDiscount =
-        product.price - ((appliedDiscount || 0) / 100) * product.price;
+        Math.round(product.price - ((appliedDiscount || 0) / 100) * product.price);
       product.priceAfterDiscount = priceAfterDiscount;
       product.appliedDiscount = appliedDiscount;
     }
