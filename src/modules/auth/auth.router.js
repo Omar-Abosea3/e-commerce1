@@ -5,7 +5,7 @@ import { confirmOTPSchema, generateOTPSchema, resetPasswordSchema, signInSchema,
 const router = Router();
 
 
-router.post('/signup' , validationCoreFunction(signUpSchema) , auth.signUp);
+router.post('/signup' , auth.signUp);
 router.post('/signin' , validationCoreFunction(signInSchema) , auth.signIn);
 router.post('/generateotp' , validationCoreFunction(generateOTPSchema) , auth.generateOTP);
 router.post('/confirmemail' , validationCoreFunction(confirmOTPSchema) , auth.confirmEmail);
