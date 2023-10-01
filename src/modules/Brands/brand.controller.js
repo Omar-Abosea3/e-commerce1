@@ -10,6 +10,9 @@ import systemRoles from "../../utils/systemRoles.js";
 
 export const addBrand = asyncHandeller(async (req, res, next) => {
     const { name } = req.body;
+    if(await brandModel.findOne({name})){
+      return next(new Error('this brand has been added before, add new brands' , {cause:400}))
+    }
     const slug = slugify(name);
 
     if (!req.file) {
