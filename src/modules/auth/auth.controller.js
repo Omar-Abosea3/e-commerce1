@@ -56,7 +56,7 @@ export const confirmEmail = asyncHandeller(async (req , res , next) => {
     user.isConfirmEmail = true;
     user.OTP=null;
     await user.save();
-    return res.status(200).json({message:'success' , user});
+    return res.status(200).json({message:'success'});
 });
 
 export const unsupscribeEmail = asyncHandeller(async(req , res , next) => {
@@ -71,7 +71,7 @@ export const unsupscribeEmail = asyncHandeller(async(req , res , next) => {
     if(!user){
         return next(new Error('invalid OTP' , {cause:404}))
     }
-    return res.status(200).json({message:'success unSubscription'});
+    return res.status(200).json({message:'success'});
 });
 
 export const forgetPassword = asyncHandeller(async(req , res , next) => {
