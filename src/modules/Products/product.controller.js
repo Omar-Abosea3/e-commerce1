@@ -163,6 +163,7 @@ export const updateProduct = asyncHandeller(async (req, res, next) => {
       const images = [];
       for (const file of req.files) {
         if(product.customId){
+          console.log('hello');
           const { secure_url, public_id } = await cloudinary.uploader.upload(
             file.path,
             {
@@ -177,6 +178,7 @@ export const updateProduct = asyncHandeller(async (req, res, next) => {
           await cloudinary.api.delete_resources(publicIds);
         }else{
           const customId1 = nanoid();
+          console.log(customId1);
           const { secure_url, public_id } = await cloudinary.uploader.upload(
             file.path,
             {
