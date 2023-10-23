@@ -116,7 +116,7 @@ export const dicreamentCounter = asyncHandeller(async(req , res , next) => {
     }
     
     let supTotal = userCart.supTotal;
-    userCart.products.find(async (product) => {
+    userCart.products.forEach(async (product) => {
         if(productId == product.productId){
             if(product.quantity - (quantity || defaultQuantity) < 0){
                 return next(new Error('invalid quantity'))
