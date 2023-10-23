@@ -87,21 +87,15 @@ export const increamentCounter = asyncHandeller(async(req , res , next) => {
        return next(new Error('not founded cart for this user'));
     }
     let supTotal = userCart.supTotal;
-    userCart.products.find(async (product) => {
+    userCart.products.forEach(async (product) => {
         if(productId == product.productId){
-            console.log(product.quantity + quantity || defaultQuantity);
-            if(product.quantity + quantity > myProduct.stok || product.quantity +  defaultQuantity > myProduct.stok){
+            console.log(product.quantity + (quantity || defaultQuantity));
+            if(product.quantity + (quantity || defaultQuantity)> myProduct.stok){
                 return next ( new Error(`this quantity not available now the available quantity is ${myProduct.stok}` , {cause:400}))  
             }
-            if(!quantity){
-                product.quantity += defaultQuantity ;
-                supTotal += myProduct.priceAfterDiscount *  defaultQuantity;
-                product.totalProductPrice += myProduct.priceAfterDiscount *  defaultQuantity
-            }else{
-                product.quantity += quantity  ;
-                supTotal += myProduct.priceAfterDiscount * (quantity);
-                product.totalProductPrice += myProduct.priceAfterDiscount * (quantity);
-            }
+            product.quantity += (quantity || defaultQuantity) ;
+            supTotal += myProduct.priceAfterDiscount * (quantity || defaultQuantity);
+            product.totalProductPrice += myProduct.priceAfterDiscount * (quantity || defaultQuantity)
         }
     });
     const newCart = await cartModel.findOneAndUpdate({userId} , {products:userCart.products , supTotal}, {new:true});
