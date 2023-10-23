@@ -162,19 +162,31 @@ export const updateProduct = asyncHandeller(async (req, res, next) => {
     if (req.files?.length) {
       const images = [];
       for (const file of req.files) {
-        const { secure_url, public_id } = await cloudinary.uploader.upload(
-          file.path,
-          {
-            folder: `${process.env.PROJECT_FOLDER}/Categories/${category.customId}/Subcategory/${subCategory.customId}/Products/${product.customId}`,
+        if(product.customId){
+          const { secure_url, public_id } = await cloudinary.uploader.upload(
+            file.path,
+            {
+              folder: `${process.env.PROJECT_FOLDER}/Categories/${category.customId}/Subcategory/${subCategory.customId}/Products/${product.customId}`,
+            }
+          );
+          images.push({ secure_url, public_id });
+          const publicIds = [];
+          for (const image of product.images) {
+            publicIds.push(image.public_id);
           }
-        );
-        images.push({ secure_url, public_id });
+          await cloudinary.api.delete_resources(publicIds);
+        }else{
+          const customId1 = nanoid();
+          const { secure_url, public_id } = await cloudinary.uploader.upload(
+            file.path,
+            {
+              folder: `${process.env.PROJECT_FOLDER}/Categories/${category.customId}/Subcategory/${subCategory.customId}/Products/${customId1}`,
+            }
+          );
+          images.push({ secure_url, public_id });
+          product.customId = customId1;
+        }
       }
-      const publicIds = [];
-      for (const image of product.images) {
-        publicIds.push(image.public_id);
-      }
-      await cloudinary.api.delete_resources(publicIds);
       product.images = images;
     }
     product.updatedBy = req.user._id;
