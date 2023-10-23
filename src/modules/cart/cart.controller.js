@@ -82,7 +82,7 @@ export const increamentCounter = asyncHandeller(async(req , res , next) => {
     if(!myProduct){
         return next(new Error('invalid product or not suitable product quantity' , {cause : 400}));
     }
-    const userCart = await cartModel.findOne({userId}).lean();
+    const userCart = await cartModel.findOne({userId});
     if(!userCart){
        return next(new Error('not founded cart for this user'));
     }
@@ -93,11 +93,12 @@ export const increamentCounter = asyncHandeller(async(req , res , next) => {
             if(product.quantity + (quantity || defaultQuantity)> myProduct.stok){
                 return next ( new Error(`this quantity not available now the available quantity is ${myProduct.stok}` , {cause:400}))  
             }
-            product.quantity += (quantity || defaultQuantity) ;
+            product.quantity += quantity || defaultQuantity ;
             supTotal += myProduct.priceAfterDiscount * (quantity || defaultQuantity);
             product.totalProductPrice += myProduct.priceAfterDiscount * (quantity || defaultQuantity)
         }
     });
+    userCart.save();
     const newCart = await cartModel.findOneAndUpdate({userId} , {products:userCart.products , supTotal}, {new:true});
     return res.status(200).json({message:"done" , newCart})
 });
