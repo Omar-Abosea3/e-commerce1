@@ -82,23 +82,28 @@ export const increamentCounter = asyncHandeller(async(req , res , next) => {
     if(!myProduct){
         return next(new Error('invalid product or not suitable product quantity' , {cause : 400}));
     }
-    const userCart = await cartModel.findOne({userId});
+    const userCart = await cartModel.findOne({userId}).lean();
     if(!userCart){
        return next(new Error('not founded cart for this user'));
     }
     let supTotal = userCart.supTotal;
     userCart.products.find(async (product) => {
         if(productId == product.productId){
-            console.log(product.quantity + (quantity || defaultQuantity));
-            if(product.quantity + (quantity || defaultQuantity)> myProduct.stok){
+            console.log(product.quantity + quantity || defaultQuantity);
+            if(product.quantity + quantity > myProduct.stok || product.quantity +  defaultQuantity > myProduct.stok){
                 return next ( new Error(`this quantity not available now the available quantity is ${myProduct.stok}` , {cause:400}))  
             }
-            product.quantity += quantity || defaultQuantity ;
-            supTotal += myProduct.priceAfterDiscount * (quantity || defaultQuantity);
-            product.totalProductPrice += myProduct.priceAfterDiscount * (quantity || defaultQuantity)
+            if(!quantity){
+                product.quantity += defaultQuantity ;
+                supTotal += myProduct.priceAfterDiscount *  defaultQuantity;
+                product.totalProductPrice += myProduct.priceAfterDiscount *  defaultQuantity
+            }else{
+                product.quantity += quantity  ;
+                supTotal += myProduct.priceAfterDiscount * (quantity);
+                product.totalProductPrice += myProduct.priceAfterDiscount * (quantity);
+            }
         }
     });
-    userCart.save();
     const newCart = await cartModel.findOneAndUpdate({userId} , {products:userCart.products , supTotal}, {new:true});
     return res.status(200).json({message:"done" , newCart})
 });
