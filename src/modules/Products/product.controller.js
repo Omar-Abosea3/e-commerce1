@@ -312,7 +312,7 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
       path : 'subCategoryId',
       select:'name image'
     }
-]).select('title colors desc sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'), req.query)
+]).select('title colors desc sizes price priceAfterDiscount appliedDiscount brandId rate images categoryId subCategoryId'), req.query)
     .pagination()
     .sort()
     .filters();
