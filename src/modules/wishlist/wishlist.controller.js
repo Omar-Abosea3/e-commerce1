@@ -193,16 +193,7 @@ export const getAllWishlistBrands = asyncHandeller(async(req , res , next) => {
         }
     }
     await wishlist.save();
-    const brands = await brandModel.find({_id:{$in:wishlist.brands}}).select('name logo categoryId subCategoryId').populate([
-        {
-            path:'categoryId',
-            select:'name image'
-        },
-        {
-            path:'subCategoryId',
-            select:'name image'
-        }
-    ]);
+    const brands = await brandModel.find({_id:{$in:wishlist.brands}}).select('name logo');
     if(!brands.length){
         return next(new Error('brands may be deleted' , {cause : 400}));
     }
