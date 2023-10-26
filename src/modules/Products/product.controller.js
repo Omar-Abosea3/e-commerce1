@@ -315,7 +315,8 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
 ]).select('title colors desc sizes price priceAfterDiscount appliedDiscount brandId rate images categoryId subCategoryId'), req.query)
     .pagination()
     .sort()
-    .filters();
+    .filters()
+    .search();
   const products = await ApiFeaturesInstance.mongooseQuery;
 
   if (products.length == 0) {

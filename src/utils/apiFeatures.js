@@ -17,6 +17,18 @@ export class ApiFeatures{
         return this;
     }
 
+    search(){
+        const {searchKey} =this.queryData;
+        const search = {
+            $or: [
+              { title: { $regex: searchKey, $options: "i" } },
+              { desc: { $regex: searchKey, $options: "i" } },
+            ],
+        }
+        this.mongooseQuery.find(search);
+        return this ;
+    }
+
     //sort.
     sort(){
         this.mongooseQuery.sort(this.queryData.sort?.replaceAll(',' , ' '));
@@ -25,7 +37,7 @@ export class ApiFeatures{
     // filters.
     filters(){
         const queryInistance = {...this.queryData};
-        const excludedKeys = ['sort' , 'select' , 'search' , 'size' , 'page'];
+        const excludedKeys = ['sort' , 'select' , 'searchKey' , 'size' , 'page'];
         excludedKeys.forEach((key)=>delete queryInistance[key]);
         const filters = JSON.parse(JSON.stringify(queryInistance).replace(/gt|gte|lt|lte|eq|in|nin|neq|regex/g,
         (match) => `$${match}`));
