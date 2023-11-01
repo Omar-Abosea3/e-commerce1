@@ -15,7 +15,7 @@ export const addProductSchema = {
     query:joi.object({
         categoryId:generalFields._id,
         subCategoryId:generalFields._id,
-        brandId:generalFields._id.optional();
+        brandId:generalFields._id.optional(),
     }).required().options({presence:'required'})
 }
 
