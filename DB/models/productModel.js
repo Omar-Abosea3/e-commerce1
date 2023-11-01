@@ -61,7 +61,7 @@ const productSchema = new Schema({
     brandId:{
         type:Schema.Types.ObjectId,
         ref:'Brand',
-        required:true
+        // required:true
     },
     images:[{
         secure_url:{

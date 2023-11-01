@@ -26,9 +26,11 @@ export const addProduct = asyncHandeller(async (req, res, next) => {
     if (!subCategory) {
       return next(new Error("not founded subcategory", { cause: 404 }));
     }
-    const brand = await brandModel.findById(brandId);
-    if (!brand) {
-      return next(new Error("not founded brand", { cause: 404 }));
+    if(brandId){
+      const brand = await brandModel.findById(brandId);
+      if (!brand) {
+        return next(new Error("not founded brand", { cause: 404 }));
+      }
     }
 
     if (subCategory.categoryId != categoryId) {
@@ -73,11 +75,14 @@ export const addProduct = asyncHandeller(async (req, res, next) => {
       stok,
       categoryId,
       subCategoryId,
-      brandId,
       images,
       customId,
       createdBy:req.user._id
     };
+
+    if(brandId){
+      productObject.brandId = brandId;
+    }
 
     const product = await productModel.create(productObject);
     if (!product) {
