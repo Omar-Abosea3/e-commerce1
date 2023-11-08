@@ -193,16 +193,16 @@ export const createOrder = asyncHandeller(async(req , res , next) => {
     const orderQr = await qrCodeFunction({
       data: { orderId: order._id, products: order.products },
     });
-    await createInvoice(orderInvoice, `${orderCode}.pdf`);
+    // await createInvoice(orderInvoice, `${orderCode}.pdf`);
     await sendEmail({
       to: req.user.email,
       subject: "Order Confirmation",
       html: "<h1>please find your invoice below</h1>",
-      attachments: [
-        {
-          path: `./Files/${orderCode}.pdf`,
-        },
-      ],
+      // attachments: [
+      //   {
+      //     path: `./Files/${orderCode}.pdf`,
+      //   },
+      // ],
     });
     console.log(orderSession);
     if(orderSession){
