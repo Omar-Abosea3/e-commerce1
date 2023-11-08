@@ -13,7 +13,7 @@ export const addProductSchema = {
     }).required(),
 
     query:joi.object({
-        categoryId:generalFields._id,
+        categoryId:generalFields._id,  
         subCategoryId:generalFields._id,
         brandId:generalFields._id.optional(),
     }).required().options({presence:'required'})
