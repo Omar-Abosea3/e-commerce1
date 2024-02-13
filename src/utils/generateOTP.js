@@ -1,7 +1,7 @@
-import otp_code_generator from "otp_code_generator";
+import otpGenerator from "otp-generator";
 
 const generateOTPFunction = async () => {
-    const OTPCode = await otp_code_generator.generate("JBSWY3DPEHPK3PXP", { digits: 4, algorithm: "SHA-512", period: 60 });
+    const OTPCode = await otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false });
     return OTPCode;
 }
 
