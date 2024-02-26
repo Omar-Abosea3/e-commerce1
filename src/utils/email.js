@@ -20,4 +20,4 @@ const sendEmail = async ({from = process.env.EMAIL , to , subject , html , text 
     });
 }
 
-export default sendEmail ;
+export default sendEmail ; 

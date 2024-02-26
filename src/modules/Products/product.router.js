@@ -1,5 +1,5 @@
 import { Router } from "express";
-import multerFunction from "../../services/multerCloudinary.js";
+import multerFunction, { multerFunction2 } from "../../services/multerCloudinary.js";
 import allowedEstensions from "../../utils/allowedExtensions.js";
 import * as product from './product.controller.js'
 import authentication from "../../middleware/authentication.js";
@@ -15,6 +15,7 @@ router.delete('/:id', authentication(roleSecurity.private) , logOutMiddleware , 
 router.get('/' , product.getAllProducts);
 router.get('/product/:id', authentication(roleSecurity.available) , logOutMiddleware , validationCoreFunction(getOneProductSchema) , product.getOneProduct);
 router.get('/search' , validationCoreFunction(searchProductSchema) , product.searchProduct);
+router.post('/search' , multerFunction2(allowedEstensions.Images).single('image') , product.searchProductWithTextFromImage);
 router.get('/filter' , product.filterProducts);
 
 

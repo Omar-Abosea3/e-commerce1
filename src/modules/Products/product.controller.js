@@ -13,6 +13,8 @@ import systemRoles from "../../utils/systemRoles.js";
 import cartModel from "../../../DB/models/cartModel.js";
 import wishlistModel from "../../../DB/models/wishlistModel.js";
 import reviewModel from "../../../DB/models/reviewModel.js";
+import Tesseract from "tesseract.js";
+import fs from 'fs';
 
 export const addProduct = asyncHandeller(async (req, res, next) => {
     const { title, desc, appliedDiscount, price, colors, sizes, stok } =
@@ -329,4 +331,65 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
   }
 
   return res.status(200).json({ message: "success", products });
+});
+
+export const searchProductWithTextFromImage = asyncHandeller(async( req , res , next )=>{
+  const {lang , imageLang} = req.query;
+  console.log(req.file);
+    const image = fs.readFileSync(`./uploads/${req.file.originalname}`, 
+    {
+        encoding:null
+    });
+
+    const { data: { text } } = await Tesseract.recognize(image , imageLang , { logger: m => console.log(m) });
+    fs.unlinkSync(`./uploads/${req.file.originalname}`);
+    console.log(text);
+    const products = await productModel.find({
+      $or: [
+        { title: { $regex: text, $options: "i" } },
+        { desc: { $regex: text, $options: "i" } },
+      ],
+    }).populate([
+      {
+        path : 'brandId',
+        select: 'name logo'
+      },
+      {
+        path : 'categoryId',
+        select:'name image'
+      },
+      {
+        path : 'subCategoryId',
+        select:'name image'
+      }
+    ]).select('title desc colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
+    const relatedProducts = [];
+    if (products.length == 0) {
+      const relatedCategory = await categoryModel.findOne({
+        name: { $regex: text, $options: "i" },
+      });
+      if(relatedCategory){
+        relatedProducts.push(... await productModel.find({categoryId:relatedCategory._id}));
+      }
+
+      const relatedSubCategory = await subCategoryModel.findOne({
+        name: { $regex: text, $options: "i" },
+      });
+      if(relatedSubCategory){
+        relatedProducts.push(... await productModel.find({subCategoryId:relatedSubCategory._id}));
+      }
+
+      const relatedBrand = await brandModel.findOne({
+        name: { $regex: text, $options: "i" },
+      });
+      if(relatedBrand){
+        relatedProducts.push(... await productModel.find({brandId:relatedBrand._id}));
+      }
+    }
+
+    if(products.length == 0 && relatedProducts.length == 0){
+      return next(new Error("no products founded", { cause: 404 }));
+    }
+
+    return res.status(200).json({message : 'success' , products , relatedProducts});
 });
