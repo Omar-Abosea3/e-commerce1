@@ -364,28 +364,28 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
       }
     ]).select('title desc colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
     const relatedProducts = [];
-    if (products.length == 0) {
-      const relatedCategory = await categoryModel.findOne({
-        name: { $regex: text, $options: "i" },
-      });
-      if(relatedCategory){
-        relatedProducts.push(... await productModel.find({categoryId:relatedCategory._id}));
-      }
+    // if (products.length == 0) {
+    //   const relatedCategory = await categoryModel.findOne({
+    //     name: { $regex: text, $options: "i" },
+    //   });
+    //   if(relatedCategory){
+    //     relatedProducts.push(... await productModel.find({categoryId:relatedCategory._id}));
+    //   }
 
-      const relatedSubCategory = await subCategoryModel.findOne({
-        name: { $regex: text, $options: "i" },
-      });
-      if(relatedSubCategory){
-        relatedProducts.push(... await productModel.find({subCategoryId:relatedSubCategory._id}));
-      }
+    //   const relatedSubCategory = await subCategoryModel.findOne({
+    //     name: { $regex: text, $options: "i" },
+    //   });
+    //   if(relatedSubCategory){
+    //     relatedProducts.push(... await productModel.find({subCategoryId:relatedSubCategory._id}));
+    //   }
 
-      const relatedBrand = await brandModel.findOne({
-        name: { $regex: text, $options: "i" },
-      });
-      if(relatedBrand){
-        relatedProducts.push(... await productModel.find({brandId:relatedBrand._id}));
-      }
-    }
+    //   const relatedBrand = await brandModel.findOne({
+    //     name: { $regex: text, $options: "i" },
+    //   });
+    //   if(relatedBrand){
+    //     relatedProducts.push(... await productModel.find({brandId:relatedBrand._id}));
+    //   }
+    // }
 
     if(products.length == 0 && relatedProducts.length == 0){
       return next(new Error("no products founded", { cause: 404 }));
