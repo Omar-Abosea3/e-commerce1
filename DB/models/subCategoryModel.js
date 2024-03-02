@@ -7,7 +7,18 @@ const subCategorySchema = new Schema({
         unique:true,
         lowercase:true
     },
+    arName:{
+        type:String,
+        required:true,
+        lowercase:true
+    },
     slug:{
+        type:String,
+        required:true,
+        unique:true,
+        lowercase:true
+    },
+    arSlug:{
         type:String,
         required:true,
         unique:true,

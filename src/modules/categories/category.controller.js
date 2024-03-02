@@ -9,10 +9,11 @@ import productModel from "../../../DB/models/productModel.js";
 import systemRoles from "../../utils/systemRoles.js";
 
 export const createCategory = asyncHandeller(async (req, res, next) => {
-    const { name } = req.body;
+    const { name , arName} = req.body;
     const slug = slugify(name);
+    const arSlug = slugify(arName);
 
-    if (await categoryModel.findOne({ name })) {
+    if (await categoryModel.findOne({ $or: [{ name }, { arName }] })) {
       return next(
         new Error("this name is already exist please enter differnt name", {
           cause: 400,
@@ -36,7 +37,9 @@ export const createCategory = asyncHandeller(async (req, res, next) => {
 
     const categoryObject = {
       name,
+      arName,
       slug,
+      arSlug,
       image: {
         secure_url,
         public_id,
@@ -56,7 +59,7 @@ export const createCategory = asyncHandeller(async (req, res, next) => {
 
 export const updateCategory = asyncHandeller(async (req, res, next) => {
     const { categoryId } = req.params;
-    const { name } = req.body;
+    const { name , arName} = req.body;
     const category = await categoryModel.findById(categoryId);
     if (!category) {
       return next(
@@ -90,6 +93,25 @@ export const updateCategory = asyncHandeller(async (req, res, next) => {
       }
       category.name = name;
       category.slug = slugify(name);
+    }
+    if (arName) {
+      if (category.arName == arName) {
+        return next(
+          new Error("please enter different name for this category", {
+            cause: 400,
+          })
+        );
+      }
+      if (await categoryModel.findOne({ arName })) {
+        return next(
+          new Error(
+            "please enter a different category name , it is dublicated name",
+            { cause: 409 }
+          )
+        );
+      }
+      category.arName = arName;
+      category.arSlug = slugify(arName);
     }
 
     if (req.file) {
@@ -170,7 +192,7 @@ export const getOneCategory = asyncHandeller(async (req, res, next) => {
           select: "slug logo",
         },
       ],
-      select:'title desc colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'
+      select:'title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'
     },
   ]);
 
@@ -184,7 +206,10 @@ export const getOneCategory = asyncHandeller(async (req, res, next) => {
 export const searchCategory = asyncHandeller(async (req, res, next) => {
   const { searchKey } = req.query;
   const categories = await categoryModel.find({
-    name: { $regex: searchKey, $options: "i" },
+    $or: [
+      { name: { $regex: searchKey, $options: "i" }}, 
+      { arName: { $regex: searchKey, $options: "i" }}
+    ],
   });
   if (categories.length == 0) {
     return next(new Error("categories not founded", { cause: 404 }));

@@ -10,13 +10,13 @@ import productModel from "../../../DB/models/productModel.js";
 
 
 export const createSubCategory = asyncHandeller(async (req, res, next) => {
-    const { name } = req.body;
+    const { name , arName } = req.body;
     const { categoryId } = req.query;
     const category = await categoryModel.findById(categoryId);
     if (!category) {
       return next(new Error("invalid categoryId", { cause: 400 }));
     }
-    if (await subCategoryModel.findOne({ name })) {
+    if (await subCategoryModel.findOne({ $or: [{ name }, { arName }] })) {
       return next(
         new Error("this name is already exist , enter another name ", {
           cause: 409,
@@ -24,6 +24,7 @@ export const createSubCategory = asyncHandeller(async (req, res, next) => {
       );
     }
     const slug = slugify(name);
+    const arSlug = slugify(arSlug);
     if (!req.file) {
       return next(new Error("please upload a category image", { cause: 400 }));
     }
@@ -37,7 +38,9 @@ export const createSubCategory = asyncHandeller(async (req, res, next) => {
     req.imagePath = `${process.env.PROJECT_FOLDER}/Categories/${category.customId}/Subcategory/${customId}`;
     const subCategoryObject = {
       name,
+      arName,
       slug,
+      arSlug,
       customId,
       categoryId,
       image: {
@@ -58,7 +61,7 @@ export const createSubCategory = asyncHandeller(async (req, res, next) => {
 
 export const updateSubCategory = asyncHandeller(async (req, res, next) => {
     const { categoryId, subCategoryId } = req.query;
-    const { name } = req.body;
+    const { name , arName } = req.body;
     const subCategory = await subCategoryModel.findById(subCategoryId);
     if (!subCategory) {
       return next(new Error("this subCategory is not found", { cause: 404 }));
@@ -83,7 +86,7 @@ export const updateSubCategory = asyncHandeller(async (req, res, next) => {
       subCategory.categoryId = categoryId;
     }
     if (name) {
-      if (subCategory.name == name) {
+      if (subCategory.name == name || await subCategoryModel.findOne({ name })) {
         return next(
           new Error("new name is must different to the previuos name", {
             cause: 400,
@@ -93,6 +96,18 @@ export const updateSubCategory = asyncHandeller(async (req, res, next) => {
       const slug = slugify(name);
       subCategory.name = name;
       subCategory.slug = slug;
+    }
+    if (arName) {
+      if (subCategory.arName == arName || await subCategoryModel.findOne({ arName })) {
+        return next(
+          new Error("new name is must different to the previuos name", {
+            cause: 400,
+          })
+        );
+      }
+      const arSlug = slugify(arName);
+      subCategory.arName = arName;
+      subCategory.arSlug = arSlug;
     }
     if (req.file) {
       await cloudinary.uploader.destroy(subCategory.image.public_id);
@@ -189,7 +204,7 @@ export const getOneSubCategory = asyncHandeller(async (req, res, next) => {
           select: "name logo",
         },
       ],
-      select:'title desc colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'
+      select:'title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'
     },
   ]);
   if (!subCategory) {
@@ -201,7 +216,10 @@ export const getOneSubCategory = asyncHandeller(async (req, res, next) => {
 export const searchSubCategory = asyncHandeller(async (req, res, next) => {
   const { searchKey } = req.query;
   const SubCategories = await subCategoryModel.find({
-    name: { $regex: searchKey, $options: "i" },
+    $or: [
+      { name: { $regex: searchKey, $options: "i" }}, 
+      { arName: { $regex: searchKey, $options: "i" }}
+    ],
   });
   if (SubCategories.length == 0) {
     return next(new Error("SubCategories not founded", { cause: 404 }));

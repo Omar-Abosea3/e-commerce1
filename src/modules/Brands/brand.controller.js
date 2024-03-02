@@ -9,11 +9,12 @@ import productModel from "../../../DB/models/productModel.js";
 import systemRoles from "../../utils/systemRoles.js";
 
 export const addBrand = asyncHandeller(async (req, res, next) => {
-    const { name } = req.body;
-    if(await brandModel.findOne({name})){
+    const { name , arName } = req.body;
+    if(await brandModel.findOne({ $or: [{ name }, { arName }] })){
       return next(new Error('this brand has been added before, add new brands' , {cause:400}))
     }
     const slug = slugify(name);
+    const arSlug = slugify(arName);
 
     if (!req.file) {
       return next(
@@ -31,7 +32,9 @@ export const addBrand = asyncHandeller(async (req, res, next) => {
 
     const brandObject = {
       name,
+      arName,
       slug,
+      arSlug,
       logo: {
         secure_url,
         public_id,
@@ -52,7 +55,7 @@ export const addBrand = asyncHandeller(async (req, res, next) => {
 
 export const updateBrand = asyncHandeller(async (req, res, next) => {
     const { brandId } = req.query;
-    const { name } = req.body;
+    const { name , arName } = req.body;
     const brand = await brandModel.findById(brandId);
     if (!brand) {
       return next(new Error("not founded brand", { cause: 404 }));
@@ -62,16 +65,30 @@ export const updateBrand = asyncHandeller(async (req, res, next) => {
         new Error("you dont have permission to edit this brand", { cause: 403 })
       );
     }
-    if (name == brand.name || (await brandModel.findOne({ name }))) {
-      return next(
-        new Error("this brand is already founded , please enter new name", {
-          cause: 409,
-        })
-      );
+    if(name){
+      if (name == brand.name || (await brandModel.findOne({ name }))) {
+        return next(
+          new Error("this brand is already founded , please enter new name", {
+            cause: 409,
+          })
+        );
+      }
+      const slug = slugify(name);
+      brand.name = name;
+      brand.slug = slug;
     }
-    const slug = slugify(name);
-    brand.name = name;
-    brand.slug = slug;
+    if(arName){
+      if (arName == brand.arName || (await brandModel.findOne({ arName }))) {
+        return next(
+          new Error("this brand is already founded , please enter new name", {
+            cause: 409,
+          })
+        );
+      }
+      const arSlug = slugify(arName);
+      brand.arName = name;
+      brand.arSlug = arSlug;
+    }
     if (req.file) {
       await cloudinary.uploader.destroy(brand.logo.public_id);
       const { secure_url, public_id } = await cloudinary.uploader.upload(
@@ -139,8 +156,11 @@ export const getOneBrand = asyncHandeller(async (req, res, next) => {
 export const searchBrand = asyncHandeller(async (req, res, next) => {
   const { searchKey } = req.query;
   const brands = await brandModel.find({
-    name: { $regex: searchKey, $options: "i" },
-  }).select('name slug logo subCategoryId categoryId');
+    $or: [
+      { name: { $regex: searchKey, $options: "i" }}, 
+      { arName: { $regex: searchKey, $options: "i" }}
+    ],
+  }).select('name arName slug arSlug logo subCategoryId categoryId');
   if (brands.length == 0) {
     return next(new Error("brands not founded", { cause: 404 }));
   }

@@ -17,7 +17,7 @@ import Tesseract from "tesseract.js";
 import fs from 'fs';
 
 export const addProduct = asyncHandeller(async (req, res, next) => {
-    const { title, desc, appliedDiscount, price, colors, sizes, stok } =
+    const { title , arTitle , desc , arDesc , appliedDiscount, price, colors, sizes, stok } =
       req.body;
     const { categoryId, subCategoryId, brandId } = req.query;
     const category = await categoryModel.findById(categoryId);
@@ -44,6 +44,7 @@ export const addProduct = asyncHandeller(async (req, res, next) => {
     }
 
     const slug = slugify(title);
+    const arSlug = slugify(arTitle);
 
     const priceAfterDiscount = Math.round(price - ((appliedDiscount || 0) / 100) * price);
 
@@ -68,12 +69,14 @@ export const addProduct = asyncHandeller(async (req, res, next) => {
     const productObject = {
       title,
       desc,
+      arDesc,
       price,
       appliedDiscount,
       priceAfterDiscount,
       colors,
       sizes,
       slug,
+      arSlug,
       stok,
       categoryId,
       subCategoryId,
@@ -99,7 +102,7 @@ export const addProduct = asyncHandeller(async (req, res, next) => {
 });
 
 export const updateProduct = asyncHandeller(async (req, res, next) => {
-    const { title, desc, appliedDiscount, price, colors, sizes, stok } =
+    const { title, arTitle , desc , arDesc , appliedDiscount, price, colors, sizes, stok } =
       req.body;
     const { categoryId, subCategoryId, brandId, productId } = req.query;
 
@@ -145,7 +148,13 @@ export const updateProduct = asyncHandeller(async (req, res, next) => {
       const slug = slugify(title);
       product.slug = slug;
     }
+    if (arTitle) {
+      product.arTitle = arTitle;
+      const arSlug = slugify(arTitle);
+      product.arSlug = arSlug;
+    }
     if (desc) product.desc = desc;
+    if (arDesc) product.arDesc = arDesc;
     if (colors) product.colors = colors;
     if (sizes) product.sizes = sizes;
     if (stok) product.stok = stok;
@@ -243,7 +252,7 @@ export const getAllProducts = asyncHandeller(async (req, res, next) => {
       },
     ])
     .limit(limit)
-    .skip(skip).select('title colors sizes price rate priceAfterDiscount brandId images categoryId subCategoryId');
+    .skip(skip).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
   if (products.length == 0) {
     return next(new Error("no products founded", { cause: 404 }));
   }
@@ -269,7 +278,7 @@ export const getOneProduct = asyncHandeller(async (req, res, next) => {
       path:"subCategoryId",
       select: 'name image'
     }
-  ]).select('title colors sizes desc price priceAfterDiscount brandId rate images categoryId subCategoryId Reviews');
+  ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId Reviews');
   if (!product) {
     return next(new Error("this product is not found", { cause: 404 }));
   }
@@ -298,7 +307,7 @@ export const searchProduct = asyncHandeller(async (req, res, next) => {
       path : 'subCategoryId',
       select:'name image'
     }
-]).select('title desc colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
+]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
   if (products.length == 0) {
     return next(new Error("products not founded", { cause: 404 }));
   }
@@ -319,7 +328,7 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
       path : 'subCategoryId',
       select:'name image'
     }
-]).select('title colors desc sizes price priceAfterDiscount appliedDiscount brandId rate images categoryId subCategoryId'), req.query)
+]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'), req.query)
     .pagination()
     .sort()
     .filters()
@@ -362,7 +371,7 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
         path : 'subCategoryId',
         select:'name image'
       }
-    ]).select('title desc colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
+    ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
     const relatedProducts = [];
     // if (products.length == 0) {
     //   const relatedCategory = await categoryModel.findOne({

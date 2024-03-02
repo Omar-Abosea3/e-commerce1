@@ -6,10 +6,23 @@ const productSchema = new Schema({
         required:true,
         lowercase:true
     },
+    arTitle:{
+        type:String,
+        required:true,
+        lowercase:true
+    },
     desc:{
         type:String,
     },
+    arDesc:{
+        type:String,
+    },
     slug:{
+        type:String,
+        required:true,
+        lowercase:true
+    },
+    arSlug:{
         type:String,
         required:true,
         lowercase:true
