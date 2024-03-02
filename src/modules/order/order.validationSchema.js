@@ -22,7 +22,7 @@ export const orderCartSchema = {
         address:generalFields.address,
         phoneNumbers:generalFields.phoneNumbers,
         paymentMethod:generalFields.paymentMethod,
-        couponCode:generalFields.couponCode,
+        couponCode:generalFields.couponCode.optional(),
         city:generalFields.city,
         state:generalFields.state
     }).required().options({presence:'required'}),
