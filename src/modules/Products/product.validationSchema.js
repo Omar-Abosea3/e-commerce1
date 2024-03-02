@@ -4,7 +4,9 @@ import { generalFields } from "../../middleware/validation.js";
 export const addProductSchema = {
     body:joi.object({
         title:generalFields.title.required(),
+        arTitle:generalFields.title.required(),
         desc:generalFields.desc.required(),
+        arDesc:generalFields.desc.required(),
         appliedDiscount:generalFields.appliedDiscount, 
         price:generalFields.price.required(), 
         colors:generalFields.colors, 
@@ -22,7 +24,9 @@ export const addProductSchema = {
 export const updateProductSchema = {
     body:joi.object({
         title:generalFields.title,
+        arTitle:generalFields.title,
         desc:generalFields.desc,
+        arDesc:generalFields.desc,
         appliedDiscount:generalFields.appliedDiscount, 
         price:generalFields.price, 
         colors:generalFields.colors, 
