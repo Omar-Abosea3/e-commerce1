@@ -20,6 +20,7 @@ export const paymentCoreFunctions = async ({
       cancel_url,
       discounts,
       line_items,
+
     })
     return paymentData
 };

@@ -312,7 +312,7 @@ export const fromCartToOrder = asyncHandeller(async (req, res, next) => {
           cancel_url:`${req.protocol}://${req.headers.host}/order/cancelorder?token=${token}`,
           line_items:order.products.map(product => {
               return{
-      
+
                   price_data:{
                       currency:'EGP',
                       product_data:{

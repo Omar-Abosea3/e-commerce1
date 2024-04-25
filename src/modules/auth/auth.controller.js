@@ -123,7 +123,7 @@ export const signIn = asyncHandeller(async(req , res , next) => {
     if(!user.isConfirmEmail){
         return next(new Error('you must confirm new account first' , {cause:400}))
     }
-    const token = jwt.sign({email:user.email , id:user._id , isLoggedIn:true} , process.env.TOKEN_SECRET , {expiresIn:'24h'});
+    const token = jwt.sign({email:user.email , id:user._id , isLoggedIn:true , role:user.role} , process.env.TOKEN_SECRET , {expiresIn:'24h'});
     user.token = token;
     user.status = 'online';
     await user.save();
