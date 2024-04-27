@@ -254,7 +254,7 @@ export const getAllProducts = asyncHandeller(async (req, res, next) => {
       },
     ])
     .limit(limit)
-    .skip(skip).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
+    .skip(skip).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount appliedAmount brandId rate images categoryId subCategoryId');
   }else{
     products = await productModel
     .find()
