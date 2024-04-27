@@ -235,7 +235,9 @@ export const deleteProduct = asyncHandeller(async (req, res, next) => {
 export const getAllProducts = asyncHandeller(async (req, res, next) => {
   const { page, size } = req.query;
   const { limit, skip } = paginationFunction({ page, size });
-  const products = await productModel
+  let products;
+  if(page || size){
+    products = await productModel
     .find()
     .populate([
       {
@@ -253,6 +255,25 @@ export const getAllProducts = asyncHandeller(async (req, res, next) => {
     ])
     .limit(limit)
     .skip(skip).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
+  }else{
+    products = await productModel
+    .find()
+    .populate([
+      {
+        path: "categoryId",
+        select: 'name image'
+      },
+      {
+        path: "subCategoryId",
+        select: 'name image'
+      },
+      {
+        path: "brandId",
+        select: 'name logo'
+      },
+    ])
+    .select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
+  }
   if (products.length == 0) {
     return next(new Error("no products founded", { cause: 404 }));
   }
