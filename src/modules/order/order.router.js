@@ -9,8 +9,8 @@ const router = Router();
 
 router.post('/:productId' , authentication(roleSecurity.available) , logOutMiddleware , validationCoreFunction(orderProductSchema) , order.createOrder);
 router.post('/orderallcartproducts/:cartId' , authentication(roleSecurity.available) , logOutMiddleware , validationCoreFunction(orderCartSchema) , order.fromCartToOrder);
-router.patch('/successorder' , authentication(roleSecurity.available) , logOutMiddleware , validationCoreFunction(successPaymentSchema) , order.successPayment);
-router.patch('/cancelorder' , authentication(roleSecurity.available) , logOutMiddleware , validationCoreFunction(cancelPaymentSchema) , order.cancelPayment);
+router.patch('/successorder' , validationCoreFunction(successPaymentSchema) , order.successPayment);
+router.patch('/cancelorder' , validationCoreFunction(cancelPaymentSchema) , order.cancelPayment);
 router.patch('/deliverorder' , authentication(roleSecurity.private) , logOutMiddleware , validationCoreFunction(deliverOrderSchema) , order.deliverOrder);
 router.get('/' , authentication(roleSecurity.available) , logOutMiddleware , order.getAllUserProducts);
 
