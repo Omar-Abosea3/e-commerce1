@@ -128,8 +128,8 @@ export const createOrder = asyncHandeller(async(req , res , next) => {
             mode:'payment',
             customer_email:req.user.email,
             metadata:{orderId:order._id.toString()},
-            success_url:`https://tradly-front.vercel.app/#/payment-status/${token}`,
-            cancel_url:`https://tradly-front.vercel.app/#/payment-status/${token}`,
+            success_url:`https://tradly-front.vercel.app/#/payment-success/${token}`,
+            cancel_url:`https://tradly-front.vercel.app/#/payment-cancel/${token}`,
             line_items:order.products.map(product => {
                 return{
         
@@ -308,8 +308,8 @@ export const fromCartToOrder = asyncHandeller(async (req, res, next) => {
           mode:'payment',
           customer_email:req.user.email,
           metadata:{orderId:order._id.toString()},
-          success_url:`https://tradly-front.vercel.app/#/payment-status/${token}`,
-          cancel_url:`https://tradly-front.vercel.app/#/payment-status/${token}`,
+          success_url:`https://tradly-front.vercel.app/#/payment-success/${token}`,
+          cancel_url:`https://tradly-front.vercel.app/#/payment-cancel/${token}`,
           line_items:order.products.map(product => {
               return{
 
