@@ -128,8 +128,8 @@ export const createOrder = asyncHandeller(async(req , res , next) => {
             mode:'payment',
             customer_email:req.user.email,
             metadata:{orderId:order._id.toString()},
-            success_url:`${req.protocol}://${req.headers.host}/order/successorder?token=${token}`,
-            cancel_url:`${req.protocol}://${req.headers.host}/order/cancelorder?token=${token}`,
+            success_url:`https://tradly-front.vercel.app/#/payment-status/${token}`,
+            cancel_url:`https://tradly-front.vercel.app/#/payment-status/${token}`,
             line_items:order.products.map(product => {
                 return{
         
@@ -412,7 +412,7 @@ export const successPayment = asyncHandeller(async (req , res , next) => {
     }
     order.orderStatus = 'confirmed';
     await order.save();
-    return res.status(200).json({message:'your order confirmed' , order});
+    return res.status(200).json({message:'confirmed' , order});
 });
 
 export const cancelPayment = asyncHandeller(async (req , res , next) => {
@@ -449,7 +449,7 @@ export const cancelPayment = asyncHandeller(async (req , res , next) => {
     }
     // =========== approch tow : delete order ========
     await orderModel.deleteOne({_id:decodedData.orderId});
-    return res.status(200).json({message:'your order canceled' , order});
+    return res.status(200).json({message:'canceled' , order});
 });
 
 export const deliverOrder = asyncHandeller(async (req , res , next) => {
