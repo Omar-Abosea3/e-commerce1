@@ -336,25 +336,43 @@ export const searchProduct = asyncHandeller(async (req, res, next) => {
 });
 
 export const filterProducts = asyncHandeller(async (req, res, next) => {
-  const ApiFeaturesInstance = new ApiFeatures(productModel.find({}).populate([
-    {
-      path : 'brandId',
-      select: 'name logo'
-    },
-    {
-      path : 'categoryId',
-      select:'name image'
-    },
-    {
-      path : 'subCategoryId',
-      select:'name image'
-    }
-]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'), req.query)
-    .pagination()
-    .sort()
-    .filters()
-    .search();
-  const products = await ApiFeaturesInstance.mongooseQuery;
+  let products;
+  if(req.query.keys){
+    const ApiFeaturesInstance = new ApiFeatures(productModel.find({}).populate([
+      {
+        path : 'brandId',
+        select: 'name logo'
+      },
+      {
+        path : 'categoryId',
+        select:'name image'
+      },
+      {
+        path : 'subCategoryId',
+        select:'name image'
+      }
+  ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'), req.query)
+      .pagination()
+      .sort()
+      .filters()
+      .search();
+    products = await ApiFeaturesInstance.mongooseQuery;
+  }else{
+    products = await productModel.find({}).populate([
+      {
+        path : 'brandId',
+        select: 'name logo'
+      },
+      {
+        path : 'categoryId',
+        select:'name image'
+      },
+      {
+        path : 'subCategoryId',
+        select:'name image'
+      }
+  ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
+  }
 
   if (products.length == 0) {
     return next(new Error("no products founded", { cause: 400 }));
