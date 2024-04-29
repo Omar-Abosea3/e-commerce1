@@ -356,8 +356,7 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
   ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'), req.query)
       .pagination()
       .sort()
-      .filters()
-      .search();
+      .filters()     
     products = await ApiFeaturesInstance.mongooseQuery;
   }else{
     products = await productModel.find({}).populate([
