@@ -337,7 +337,9 @@ export const searchProduct = asyncHandeller(async (req, res, next) => {
 
 export const filterProducts = asyncHandeller(async (req, res, next) => {
   let products;
-  if(req.query.keys){
+  const hasKeys = !!Object.keys(req.query).length;
+  console.log(hasKeys);
+  if(hasKeys){
     const ApiFeaturesInstance = new ApiFeatures(productModel.find({}).populate([
       {
         path : 'brandId',
