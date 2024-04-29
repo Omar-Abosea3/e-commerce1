@@ -70,6 +70,7 @@ export const addProduct = asyncHandeller(async (req, res, next) => {
       title,
       desc,
       arDesc,
+      arTitle,
       price,
       appliedDiscount,
       priceAfterDiscount,
