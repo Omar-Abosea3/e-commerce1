@@ -304,7 +304,10 @@ export const getOneProduct = asyncHandeller(async (req, res, next) => {
   if (!product) {
     return next(new Error("this product is not found", { cause: 404 }));
   }
-  const coupons = await couponModel.find({"couponAssignedtoUsers.userId":req.user._id});
+  let coupons;
+  if(req.user){
+    coupons = await couponModel.find({"couponAssignedtoUsers.userId":req.user._id});
+  }
 
   return res.status(209).json({ message: "success", product , coupons });
 });
