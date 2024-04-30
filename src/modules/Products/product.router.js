@@ -13,7 +13,7 @@ router.post('/'  , authentication(roleSecurity.private) , logOutMiddleware , mul
 router.put('/' , authentication(roleSecurity.private) , logOutMiddleware , multerFunction(allowedEstensions.Images).array('image' , 3) , validationCoreFunction(updateProductSchema)  , product.updateProduct);
 router.delete('/:id', authentication(roleSecurity.private) , logOutMiddleware , validationCoreFunction(deleteProductSchema) , product.deleteProduct);
 router.get('/' , product.getAllProducts);
-router.get('/product/:id', authentication(roleSecurity.available) , logOutMiddleware , validationCoreFunction(getOneProductSchema) , product.getOneProduct);
+router.get('/product/:id' , validationCoreFunction(getOneProductSchema) , product.getOneProduct);
 router.get('/search' , validationCoreFunction(searchProductSchema) , product.searchProduct);
 router.post('/search' , multerFunction2(allowedEstensions.Images).single('image') , product.searchProductWithTextFromImage);
 router.get('/filter' , product.filterProducts);
