@@ -300,7 +300,7 @@ export const getOneProduct = asyncHandeller(async (req, res, next) => {
       path:"subCategoryId",
       select: 'name image'
     }
-  ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId Reviews');
+  ]).select('title arTitle desc arDesc slug arSlug colors sizes price appliedDiscount stok priceAfterDiscount brandId rate images categoryId subCategoryId Reviews');
   if (!product) {
     return next(new Error("this product is not found", { cause: 404 }));
   }
