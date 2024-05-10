@@ -68,7 +68,7 @@ const userSchema = new Schema({
         enum:['online' , 'offline']
     },
     OTP:Number,
-    token:String,
+    tokens:[String],
     provider:{
         type:String,
         enum:['GOOGLE']

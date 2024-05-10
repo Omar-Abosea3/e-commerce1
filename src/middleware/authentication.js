@@ -32,7 +32,7 @@ const authentication = (roles) => {
         console.log(process.env.TOKEN_SECRET);
         if (error == "TokenExpiredError: jwt expired") {
           // searching for user by expired token that have been stored in data base .
-          const findUser = await userModel.findOne({ token: token });
+          const findUser = await userModel.findOne({ tokens: {$in:[token]} });
           if (!findUser) {
             return next(new Error("wrong token", { cause: 404 }));
           }

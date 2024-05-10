@@ -124,7 +124,7 @@ export const signIn = asyncHandeller(async(req , res , next) => {
         return next(new Error('you must confirm new account first' , {cause:400}))
     }
     const token = jwt.sign({email:user.email , id:user._id , isLoggedIn:true , role:user.role} , process.env.TOKEN_SECRET , {expiresIn:'24h'});
-    user.token = token;
+    user.tokens.push(token);
     user.status = 'online';
     await user.save();
     const bearerToken = process.env.BEARERKEY + token ;
