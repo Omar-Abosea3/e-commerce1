@@ -144,7 +144,7 @@ export const getOneBrand = asyncHandeller(async (req, res, next) => {
   const brand = await brandModel.findById(id).populate([
     {
       path: "Products",
-      select:'title desc colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'
+      select:'title desc arTitle arDesc colors appliedDiscount sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'
     },
   ]).select('name slug logo subCategoryId categoryId');
   if (!brand) {

@@ -192,7 +192,7 @@ export const getOneCategory = asyncHandeller(async (req, res, next) => {
           select: "slug logo",
         },
       ],
-      select:'title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'
+      select:'title arTitle appliedDiscount desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'
     },
   ]);
 

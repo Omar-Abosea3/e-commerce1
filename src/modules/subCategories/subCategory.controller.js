@@ -204,7 +204,7 @@ export const getOneSubCategory = asyncHandeller(async (req, res, next) => {
           select: "name logo",
         },
       ],
-      select:'title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'
+      select:'title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId appliedDiscount rate images categoryId subCategoryId'
     },
   ]);
   if (!subCategory) {

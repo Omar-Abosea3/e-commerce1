@@ -332,7 +332,7 @@ export const searchProduct = asyncHandeller(async (req, res, next) => {
       path : 'subCategoryId',
       select:'name image'
     }
-]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
+]).select('title arTitle desc arDesc slug arSlug colors sizes price appliedDiscount priceAfterDiscount brandId rate images categoryId subCategoryId');
   if (products.length == 0) {
     return next(new Error("products not founded", { cause: 404 }));
   }
@@ -375,7 +375,7 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
         path : 'subCategoryId',
         select:'name image'
       }
-  ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
+  ]).select('title arTitle desc arDesc slug arSlug colors sizes price appliedDiscount priceAfterDiscount brandId rate images categoryId subCategoryId');
   }
 
   if (products.length == 0) {
