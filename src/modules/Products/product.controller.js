@@ -343,8 +343,7 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
   let products;
   const hasKeys = !!Object.keys(req.query).length;
   console.log(hasKeys);
-  const AllData = new ApiFeatures(productModel.find({}) , req.query).filters();
-  const numOfProducts = await AllData.mongooseQuery.length;
+  const numOfProducts = (await productModel.find({})).length;
   if(hasKeys){
     const ApiFeaturesInstance = new ApiFeatures(productModel.find({}).populate([
       {
