@@ -343,8 +343,8 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
   let products;
   const hasKeys = !!Object.keys(req.query).length;
   console.log(hasKeys);
-  const numOfProducts = await productModel.find({}).length;
-  console.log(numOfProducts , req.query.size);
+  const numOfProducts = await productModel.find();
+  console.log(numOfProducts.length , req.query.size);
   if(hasKeys){
     const ApiFeaturesInstance = new ApiFeatures(productModel.find({}).populate([
       {
@@ -385,7 +385,7 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
     return next(new Error("no products founded", { cause: 400 }));
   }
 
-  return res.status(200).json({ message: "success", products , numOfPages:Math.ceil(numOfProducts/req.query.size) });
+  return res.status(200).json({ message: "success", products , numOfPages:Math.ceil(numOfProducts.length/parseInt(req.query.size)) });
 });
 
 export const searchProductWithTextFromImage = asyncHandeller(async( req , res , next )=>{
