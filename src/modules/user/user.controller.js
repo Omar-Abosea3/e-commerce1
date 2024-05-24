@@ -147,6 +147,11 @@ export const searchForUsers = asyncHandeller(async (req, res, next) => {
 });
 
 export const logOutUser = asyncHandeller(async (req , res , next) => {
-  const user = await userModel.findByIdAndUpdate(req.user._id , {status:'offline' , isLoggedIn:false , token:null});
+  const user = await userModel.findOne({_id:req.user._id} , {status:'offline' , isLoggedIn:false , token:null});
+  user.status = 'offline';
+  user.isLoggedIn = false;
+  const token = req.headers.bearertoken.slice('ecommerce__'.length);
+  user.tokens.splice(user.tokens.indexOf(token) , 1);
+  await user.save();
   return res.status(200).json({message:'success logging out'});
 })
