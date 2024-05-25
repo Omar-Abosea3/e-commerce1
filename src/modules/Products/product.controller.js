@@ -345,7 +345,7 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
   const hasKeys = !!Object.keys(req.query).length;
   console.log(hasKeys);
   // const numOfProducts = await productModel.find();
-  console.log(numOfProducts.length , req.query.size);
+ 
   if(hasKeys){
     const ApiFeaturesInstance = new ApiFeatures(productModel.find({}).populate([
       {
@@ -386,7 +386,7 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
   if (products.length == 0) {
     return next(new Error("no products founded", { cause: 400 }));
   }
-
+  console.log(products.length , req.query.size);
   return res.status(200).json({ message: "success", products , numOfPages:Math.ceil(products.length/parseInt(req.query.size)) });
 });
 
