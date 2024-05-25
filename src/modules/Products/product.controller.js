@@ -342,6 +342,7 @@ export const searchProduct = asyncHandeller(async (req, res, next) => {
 
 export const filterProducts = asyncHandeller(async (req, res, next) => {
   let products;
+  let productsLength;
   const hasKeys = !!Object.keys(req.query).length;
   console.log(hasKeys);
   // const numOfProducts = await productModel.find();
@@ -366,6 +367,26 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
       .search()
       .pagination();
     products = await ApiFeaturesInstance.mongooseQuery;
+
+    // getProductsLength
+    const ApiFeaturesInstanceLength = new ApiFeatures(productModel.find({}).populate([
+      {
+        path : 'brandId',
+        select: 'name logo'
+      },
+      {
+        path : 'categoryId',
+        select:'name image'
+      },
+      {
+        path : 'subCategoryId',
+        select:'name image'
+      }
+  ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId'), req.query)
+      .sort()
+      .filters()
+      .search();
+    productsLength = await ApiFeaturesInstanceLength.mongooseQuery;
   }else{
     products = await productModel.find({}).populate([
       {
@@ -386,8 +407,8 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
   if (products.length == 0) {
     return next(new Error("no products founded", { cause: 400 }));
   }
-  console.log(products.length , req.query.size);
-  return res.status(200).json({ message: "success", products , numOfPages:Math.ceil(products.length/parseInt(req.query.size)) });
+  console.log(productsLength.length , req.query.size);
+  return res.status(200).json({ message: "success", products , numOfPages:Math.ceil(productsLength.length/parseInt(req.query.size)) });
 });
 
 export const searchProductWithTextFromImage = asyncHandeller(async( req , res , next )=>{
