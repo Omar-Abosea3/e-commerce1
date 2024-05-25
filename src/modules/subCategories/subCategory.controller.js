@@ -24,7 +24,7 @@ export const createSubCategory = asyncHandeller(async (req, res, next) => {
       );
     }
     const slug = slugify(name);
-    const arSlug = slugify(arSlug);
+    const arSlug = slugify(arName);
     if (!req.file) {
       return next(new Error("please upload a category image", { cause: 400 }));
     }
