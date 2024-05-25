@@ -387,7 +387,7 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
     return next(new Error("no products founded", { cause: 400 }));
   }
 
-  return res.status(200).json({ message: "success", products , numOfPages:Math.ceil(numOfProducts.length/parseInt(req.query.size)) });
+  return res.status(200).json({ message: "success", products , numOfPages:Math.ceil(products.length/parseInt(req.query.size)) });
 });
 
 export const searchProductWithTextFromImage = asyncHandeller(async( req , res , next )=>{
