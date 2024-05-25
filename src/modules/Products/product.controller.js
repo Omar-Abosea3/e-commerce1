@@ -412,7 +412,8 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
 });
 
 export const searchProductWithTextFromImage = asyncHandeller(async( req , res , next )=>{
-  const {lang , imageLang} = req.query;
+  const { imageLang , size , page} = req.query;
+  const {limit , skip} = paginationFunction({page , size})
   console.log(req.file);
     const image = fs.readFileSync(`./uploads/${req.file.originalname}`, 
     {
@@ -440,7 +441,9 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
         path : 'subCategoryId',
         select:'name image'
       }
-    ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
+    ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId')
+    .limit(limit)
+    .skip(skip);
     const relatedProducts = [];
     // if (products.length == 0) {
     //   const relatedCategory = await categoryModel.findOne({
@@ -469,7 +472,7 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
       return next(new Error("no products founded", { cause: 404 }));
     }
 
-    return res.status(200).json({message : 'success' , products , relatedProducts});
+    return res.status(200).json({message : 'success' , products  , numOfPages:Math.ceil(products.length/parseInt(size))});
 });
 
 export const searchProductsWithImage = asyncHandeller(async(req , res , next) => {
