@@ -15,6 +15,7 @@ import wishlistModel from "../../../DB/models/wishlistModel.js";
 import reviewModel from "../../../DB/models/reviewModel.js";
 import Tesseract from "tesseract.js";
 import fs from 'fs';
+import axios from "axios";
 
 export const addProduct = asyncHandeller(async (req, res, next) => {
     const { title , arTitle , desc , arDesc , appliedDiscount, price, colors, sizes, stok } =
@@ -447,4 +448,49 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
     }
 
     return res.status(200).json({message : 'success' , products , relatedProducts});
+});
+
+export const searchProductsWithImage = asyncHandeller(async(req , res , next) => {
+  const image = fs.readFileSync(`./uploads/${req.file.originalname}`, { encoding: null });
+  if (!image) {
+    return next(new Error('Please upload a photo', { cause: 400 }));
+  }
+  const formData = new FormData();
+  const blob = new Blob([image], { type: req.file.mimetype });
+  formData.append('image', blob, req.file.originalname);
+
+  const {data} = await axios.post('https://1cf7-217-54-90-196.ngrok-free.app/predictTourismAPI', formData , {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  if(data.error){
+    return next(new Error(data.error , {cause:400}));
+  }
+  console.log(data);
+  fs.unlinkSync(`./uploads/${req.file.originalname}`);
+  const products = await productModel.find({
+    $or: [
+      { title: { $regex: data.name, $options: "i" } },
+      // { desc: { $regex: data.name, $options: "i" } },
+    ],
+  }).populate([
+    {
+      path : 'brandId',
+      select: 'name logo'
+    },
+    {
+      path : 'categoryId',
+      select:'name image'
+    },
+    {
+      path : 'subCategoryId',
+      select:'name image'
+    }
+  ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
+  if (products.length == 0) {
+    return next(new Error("no products founded", { cause: 404 }));
+  }
+
+  return res.status(200).json({message:'success' , products});
 });

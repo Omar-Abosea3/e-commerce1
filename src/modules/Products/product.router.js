@@ -16,6 +16,7 @@ router.get('/' , product.getAllProducts);
 router.get('/product/:id' , validationCoreFunction(getOneProductSchema) , product.getOneProduct);
 router.get('/search' , validationCoreFunction(searchProductSchema) , product.searchProduct);
 router.post('/search' , multerFunction2(allowedEstensions.Images).single('image') , product.searchProductWithTextFromImage);
+router.post('/search-image' , multerFunction2(allowedEstensions.Images).single('image') , product.searchProductsWithImage);
 router.get('/filter' , product.filterProducts);
 
 
