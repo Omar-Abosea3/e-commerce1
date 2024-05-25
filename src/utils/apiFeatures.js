@@ -21,10 +21,10 @@ export class ApiFeatures{
         const {searchKey} =this.queryData;
         const search = {
             $or: [
-              { title: { $regex: searchKey, $options: "i" } },
-              { desc: { $regex: searchKey, $options: "i" } },
-              { arTitle: { $regex: searchKey, $options: "i" } },
-              { arDesc: { $regex: searchKey, $options: "i" } },
+              { title: { $regex: new String(searchKey), $options: "i" } },
+              { desc: { $regex: new String(searchKey), $options: "i" } },
+              { arTitle: { $regex: new String(searchKey), $options: "i" } },
+              { arDesc: { $regex: new String(searchKey), $options: "i" } },
             ],
         }
         this.mongooseQuery.find(search);
