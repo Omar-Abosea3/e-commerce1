@@ -5,6 +5,7 @@ import { generalFields } from "../../middleware/validation.js";
 export const createSubCategorySchema = {
     body:joi.object({
         name:generalFields.name,
+        arName:generalFields.name
     }).required().options({presence:'required'}),
 
 
