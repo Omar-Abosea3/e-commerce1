@@ -23,6 +23,8 @@ export class ApiFeatures{
             $or: [
               { title: { $regex: searchKey, $options: "i" } },
               { desc: { $regex: searchKey, $options: "i" } },
+              { arTitle: { $regex: searchKey, $options: "i" } },
+              { arDesc: { $regex: searchKey, $options: "i" } },
             ],
         }
         this.mongooseQuery.find(search);
