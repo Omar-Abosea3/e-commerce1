@@ -427,6 +427,8 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
       $or: [
         { title: { $regex: text, $options: "i" } },
         { desc: { $regex: text, $options: "i" } },
+        { arTitle: { $regex: text, $options: "i" } },
+        { arDesc: { $regex: text, $options: "i" } },
       ],
     }).populate([
       {
@@ -470,9 +472,9 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
 
     if(products.length == 0 && relatedProducts.length == 0){
       return next(new Error("no products founded", { cause: 404 }));
-    }
+    } 
 
-    return res.status(200).json({message : 'success' , products  , numOfPages:Math.ceil(products.length/parseInt(size))});
+    return res.status(200).json({message : 'success' , products , text  , numOfPages:Math.ceil(products.length/parseInt(size))});
 });
 
 export const searchProductsWithImage = asyncHandeller(async(req , res , next) => {
