@@ -499,7 +499,7 @@ export const searchProductsWithImage = asyncHandeller(async(req , res , next) =>
   const products = await productModel.find({
     $or: [
       { title: { $regex: data.name, $options: "i" } },
-      { desc: { $regex: data.name, $options: "i" } },
+      // { desc: { $regex: data.name, $options: "i" } },
     ],
   }).populate([
     {
