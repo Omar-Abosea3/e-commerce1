@@ -486,7 +486,7 @@ export const searchProductsWithImage = asyncHandeller(async(req , res , next) =>
   const blob = new Blob([image], { type: req.file.mimetype });
   formData.append('image', blob, req.file.originalname);
 
-  const {data} = await axios.post('https://c2eb-62-114-218-146.ngrok-free.app/predictTourismAPI', formData , {
+  const {data} = await axios.post('https://9ee9-62-114-116-116.ngrok-free.app/predictTourismAPI', formData , {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
