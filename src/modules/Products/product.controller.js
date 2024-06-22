@@ -414,10 +414,11 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
 export const searchProductWithTextFromImage = asyncHandeller(async( req , res , next )=>{
   const preprocessImage = async (inputPath, outputPath) => {
     await sharp(inputPath)
-      .grayscale() // Convert to grayscale
-      .blur(1) // Apply Gaussian blur to reduce noise
-      .threshold(128) // Apply adaptive thresholding
-      .toFile(outputPath);
+    .resize({ width: 800 }) // Resize for consistency (adjust as necessary)
+    .grayscale() // Convert to grayscale
+    .sharpen() // Sharpen the image
+    .threshold(150) // Apply adaptive thresholding (adjust value as necessary)
+    .toFile(outputPath);
   };
   const { imageLang , size , page} = req.query;
   const {limit , skip} = paginationFunction({page , size})
