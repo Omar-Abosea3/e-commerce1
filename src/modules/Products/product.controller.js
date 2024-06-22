@@ -522,5 +522,5 @@ export const searchProductsWithImage = asyncHandeller(async(req , res , next) =>
     return next(new Error("no products founded", { cause: 404 }));
   }
 
-  return res.status(200).json({message:'success' , products:subCategory.Products , numOfPages:Math.ceil(products.length/parseInt(30))});
+  return res.status(200).json({message:'success' , products:subCategory.Products , numOfPages:Math.ceil(subCategory.Products.length/parseInt(30))});
 });
