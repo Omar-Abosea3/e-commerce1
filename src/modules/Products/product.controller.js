@@ -16,7 +16,7 @@ import reviewModel from "../../../DB/models/reviewModel.js";
 import Tesseract from "tesseract.js";
 import fs from 'fs';
 import axios from "axios";
-
+import sharp from 'sharp';
 export const addProduct = asyncHandeller(async (req, res, next) => {
     const { title , arTitle , desc , arDesc , appliedDiscount, price, colors, sizes, stok } =
       req.body;
@@ -412,16 +412,29 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
 });
 
 export const searchProductWithTextFromImage = asyncHandeller(async( req , res , next )=>{
+  const preprocessImage = async (inputPath, outputPath) => {
+    await sharp(inputPath)
+      .grayscale() // Convert to grayscale
+      .blur(1) // Apply Gaussian blur to reduce noise
+      .threshold(128) // Apply adaptive thresholding
+      .toFile(outputPath);
+  };
   const { imageLang , size , page} = req.query;
   const {limit , skip} = paginationFunction({page , size})
+  const inputPath = `./uploads/${req.file.originalname}`;
+  const outputPath = `./uploads/preprocessed_${req.file.originalname}`;
+
+    // Preprocess the image
+    await preprocessImage(inputPath, outputPath);
   console.log(req.file);
-    const image = fs.readFileSync(`./uploads/${req.file.originalname}`, 
+    const image = fs.readFileSync(outputPath, 
     {
         encoding:null
     });
 
     const { data: { text } } = await Tesseract.recognize(image , imageLang , { logger: m => console.log(m) });
-    fs.unlinkSync(`./uploads/${req.file.originalname}`);
+    fs.unlinkSync(inputPath);
+    fs.unlinkSync(outputPath);
     console.log(text);
     const products = await productModel.find({
       $or: [
