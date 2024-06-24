@@ -461,28 +461,7 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
     .limit(limit)
     .skip(skip);
     const relatedProducts = [];
-    // if (products.length == 0) {
-    //   const relatedCategory = await categoryModel.findOne({
-    //     name: { $regex: text, $options: "i" },
-    //   });
-    //   if(relatedCategory){
-    //     relatedProducts.push(... await productModel.find({categoryId:relatedCategory._id}));
-    //   }
-
-    //   const relatedSubCategory = await subCategoryModel.findOne({
-    //     name: { $regex: text, $options: "i" },
-    //   });
-    //   if(relatedSubCategory){
-    //     relatedProducts.push(... await productModel.find({subCategoryId:relatedSubCategory._id}));
-    //   }
-
-    //   const relatedBrand = await brandModel.findOne({
-    //     name: { $regex: text, $options: "i" },
-    //   });
-    //   if(relatedBrand){
-    //     relatedProducts.push(... await productModel.find({brandId:relatedBrand._id}));
-    //   }
-    // }
+ 
 
     if(products.length == 0 && relatedProducts.length == 0){
       return next(new Error("no products founded", { cause: 404 }));
@@ -500,7 +479,7 @@ export const searchProductsWithImage = asyncHandeller(async(req , res , next) =>
   const blob = new Blob([image], { type: req.file.mimetype });
   formData.append('image', blob, req.file.originalname);
 
-  const {data} = await axios.post('https://9ee9-62-114-116-116.ngrok-free.app/predictTourismAPI', formData , {
+  const {data} = await axios.post('https://7ce2-62-114-165-107.ngrok-free.app/predictTourismAPI', formData , {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
