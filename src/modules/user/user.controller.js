@@ -120,7 +120,7 @@ export const updateProfile = asyncHandeller(async (req, res, next) => {
 });
 
 export const getProfileInfo = asyncHandeller(async (req, res, next) => {
-  const profileData = await userModel.findById(req.user._id, "-password");
+  const profileData = await userModel.findById(req.user._id, "-password -token -OTP -isConfirmEmail -tokens");
   return res.status(200).json({ message: "success", profileData });
 });
 
