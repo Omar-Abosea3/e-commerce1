@@ -15,6 +15,6 @@ router.get('/category/:id' , validationCoreFunction(getOneCategorySchema) ,  cat
 router.delete('/:categoryId' , authentication(roleSecurity.private) , logOutMiddleware , validationCoreFunction(deleteCategorySchema) ,  category.deleteCategory);
 router.put('/:categoryId' , authentication(roleSecurity.private) , logOutMiddleware , multerFunction(allowedEstensions.Images).single('image') , validationCoreFunction(updateCategorySchema) , category.updateCategory);
 router.get('/search' , validationCoreFunction(searchCategorySchema) , category.searchCategory);
-
+ 
 
 export default router ;
