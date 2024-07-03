@@ -346,7 +346,7 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
   const hasKeys = !!Object.keys(req.query).length;
   console.log(hasKeys);
   // const numOfProducts = await productModel.find();
- 
+  console.log(req.params);
   if(hasKeys){
     const ApiFeaturesInstance = new ApiFeatures(productModel.find({}).populate([
       {
