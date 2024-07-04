@@ -440,9 +440,9 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
     const products = await productModel.find({
       $or: [
         { title: { $regex: text, $options: "i" } },
-        { desc: { $regex: text, $options: "i" } },
+        // { desc: { $regex: text, $options: "i" } },
         { arTitle: { $regex: text, $options: "i" } },
-        { arDesc: { $regex: text, $options: "i" } },
+        // { arDesc: { $regex: text, $options: "i" } },
       ],
     }).populate([
       {
