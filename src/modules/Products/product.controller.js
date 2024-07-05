@@ -423,18 +423,8 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
         await image
             .resize({ width: targetWidth }) // Resize to a maximum width
             .grayscale() // Convert to grayscale
-            .median(1) // Optional: Reduce noise with a median filter
+            .median(3) // Optional: Reduce noise with a median filter
             .sharpen(2, 1, 1) // Sharpen the image (adjust parameters if necessary)
-            .threshold(200) // Apply binary thresholding
-            .convolve({ // Optional: Edge detection
-                width: 3,
-                height: 3,
-                kernel: [
-                    -1, -1, -1,
-                    -1,  8, -1,
-                    -1, -1, -1
-                ]
-            })
             .toFile(outputPath); // Save to file
   };
   const { imageLang } = req.query;
@@ -444,21 +434,21 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
     // Preprocess the image
     await preprocessImage(inputPath, outputPath);
   console.log(req.file);
-    const image = fs.readFileSync(outputPath, 
+    const image2 = fs.readFileSync(outputPath, 
     {
         encoding:null
     });
 
-    const { data: { text } } = await Tesseract.recognize(image , imageLang , { logger: m => console.log(m) });
+    const { data : {text}} = await Tesseract.recognize(image2 , imageLang , { logger: m => console.log(m)  } );
+    console.log(text);
     fs.unlinkSync(inputPath);
     fs.unlinkSync(outputPath);
-    console.log(text);
     const products = await productModel.find({
       $or: [
-        { title: { $regex: text, $options: "i" } },
-        { desc: { $regex: text, $options: "i" } },
-        { arTitle: { $regex: text, $options: "i" } },
-        { arDesc: { $regex: text, $options: "i" } },
+        { title: { $regex:text, $options: "i" } },
+        { desc: { $regex:text, $options: "i" } },
+        { arTitle: { $regex:text, $options: "i" } },
+        { arDesc: { $regex:text, $options: "i" } },
       ],
     }).populate([
       {
@@ -481,7 +471,7 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
       return next(new Error("no products founded", { cause: 404 }));
     } 
 
-    return res.status(200).json({message : 'success' , products , text  });
+    return res.status(200).json({message : 'success' , products , text:text  });
 });
 
 export const searchProductsWithImage = asyncHandeller(async(req , res , next) => {
