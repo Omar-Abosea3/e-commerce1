@@ -423,9 +423,15 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
         await image
             .resize({ width: targetWidth }) // Resize to a maximum width
             .grayscale() // Convert to grayscale
+            .modulate({ 
+              contrast: 2, // Increase contrast
+              }) // Enhance brightness and contrast
             .median(3) // Optional: Reduce noise with a median filter
             .sharpen(2, 1, 1) // Sharpen the image (adjust parameters if necessary)
+          
+            // .threshold(100) // Apply binary thresholding
             .toFile(outputPath); // Save to file
+            
   };
   const cutStringAtNewline = (inputString) => {
     const newlineIndex = inputString.indexOf('\n');
@@ -449,8 +455,8 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
 
     const { data : {text}} = await Tesseract.recognize(image2 , imageLang , { logger: m => console.log(m)  } );
     console.log(text);
-    fs.unlinkSync(inputPath);
-    fs.unlinkSync(outputPath);
+    // fs.unlinkSync(inputPath);
+    // fs.unlinkSync(outputPath);
     const products = await productModel.find({
       $or: [
         { title: { $regex:cutStringAtNewline(text), $options: "i" } },
