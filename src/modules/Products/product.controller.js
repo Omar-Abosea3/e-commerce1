@@ -413,12 +413,29 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
 
 export const searchProductWithTextFromImage = asyncHandeller(async( req , res , next )=>{
   const preprocessImage = async (inputPath, outputPath) => {
-    await sharp(inputPath)
-    .resize({ width: 800 }) // Resize for consistency (adjust as necessary)
-    .grayscale() // Convert to grayscale
-    .sharpen() // Sharpen the image
-    .threshold(150) // Apply adaptive thresholding (adjust value as necessary)
-    .toFile(outputPath);
+    const image = sharp(inputPath);
+        
+        // Get metadata to determine resizing dimensions
+        const metadata = await image.metadata();
+        const targetWidth = metadata.width > 1000 ? 1000 : metadata.width; // Adjust target width as needed
+        
+        // Processing the image
+        await image
+            .resize({ width: targetWidth }) // Resize to a maximum width
+            .grayscale() // Convert to grayscale
+            .median(1) // Optional: Reduce noise with a median filter
+            .sharpen(2, 1, 1) // Sharpen the image (adjust parameters if necessary)
+            .threshold(200) // Apply binary thresholding
+            .convolve({ // Optional: Edge detection
+                width: 3,
+                height: 3,
+                kernel: [
+                    -1, -1, -1,
+                    -1,  8, -1,
+                    -1, -1, -1
+                ]
+            })
+            .toFile(outputPath); // Save to file
   };
   const { imageLang } = req.query;
   const inputPath = `./uploads/${req.file.originalname}`;
