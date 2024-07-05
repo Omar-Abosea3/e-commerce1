@@ -420,8 +420,7 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
     .threshold(150) // Apply adaptive thresholding (adjust value as necessary)
     .toFile(outputPath);
   };
-  const { imageLang , size , page} = req.query;
-  const {limit , skip} = paginationFunction({page , size})
+  const { imageLang } = req.query;
   const inputPath = `./uploads/${req.file.originalname}`;
   const outputPath = `./uploads/preprocessed_${req.file.originalname}`;
 
@@ -457,9 +456,7 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
         path : 'subCategoryId',
         select:'name image'
       }
-    ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId')
-    .limit(limit)
-    .skip(skip);
+    ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
     const relatedProducts = [];
  
 
