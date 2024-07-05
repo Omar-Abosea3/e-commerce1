@@ -419,7 +419,7 @@ const preprocessImage = async (inputPath, outputPath , type) => {
       // Processing the image
       if(type == 'text'){
         await image
-        .resize({ width: targetWidth }) // Resize to a maximum width
+        .resize({ width: targetWidth }) // Resize to a maximum width ل
         .grayscale() // Convert to grayscale
         .modulate({ 
           contrast: 2, // Increase contrast
