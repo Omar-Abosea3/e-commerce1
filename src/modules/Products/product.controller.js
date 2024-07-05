@@ -435,7 +435,7 @@ const preprocessImage = async (inputPath, outputPath , type) => {
           contrast: 2, // Increase contrast
           }) // Enhance brightness and contrast
         .median(3) // Optional: Reduce noise with a median filter
-        .sharpen(2, 1, 1) // Sharpen the image (adjust parameters if necessary)
+        .sharpen(4, 2, 2) // Sharpen the image (adjust parameters if necessary)
         .toFile(outputPath); // Save to file
       }
           
@@ -520,8 +520,8 @@ export const searchProductsWithImage = asyncHandeller(async(req , res , next) =>
     return next(new Error(data.error , {cause:400}));
   }
   console.log(data);
-  fs.unlinkSync(inputPath);
-  fs.unlinkSync(inputPath);
+  // fs.unlinkSync(inputPath);
+  // fs.unlinkSync(inputPath);
   const subCategory = await subCategoryModel.findOne(
       { name: { $regex: data.name, $options: "i" } },
    ).populate([
@@ -544,9 +544,35 @@ export const searchProductsWithImage = asyncHandeller(async(req , res , next) =>
       ]
     }, 
   ]);
-  if (subCategory.Products.length == 0) {
-    return next(new Error("no products founded", { cause: 404 }));
+  let products ;
+  if (!subCategory || subCategory.Products?.length === 0) {
+    products = await productModel.find({
+      $or: [
+      { title: { $regex:data.name, $options: "i" } },
+      { desc: { $regex:data.name, $options: "i" } },
+      { arTitle: { $regex:data.name, $options: "i" } },
+      { arDesc: { $regex:data.name, $options: "i" } },
+    ]}).populate([
+      {
+        path : 'brandId',
+        select: 'name logo'
+      },
+      {
+        path : 'categoryId',
+        select:'name image'
+      },
+      {
+        path : 'subCategoryId',
+        select:'name image'
+      }
+    ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
+  }else{
+    products = subCategory.Products;
   }
 
-  return res.status(200).json({message:'success' , products:subCategory.Products , numOfPages:Math.ceil(subCategory.Products.length/parseInt(30))});
+  if(!products.length){
+    return next(new Error(`no products founded for ${data.name}`, { cause: 404 }));
+  }
+
+  return res.status(200).json({message:'success' , products , numOfPages:Math.ceil(products.length/parseInt(30))});
 });
