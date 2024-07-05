@@ -464,7 +464,7 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
       return next(new Error("no products founded", { cause: 404 }));
     } 
 
-    return res.status(200).json({message : 'success' , products , text  , numOfPages:Math.ceil(products.length/parseInt(size))});
+    return res.status(200).json({message : 'success' , products , text  });
 });
 
 export const searchProductsWithImage = asyncHandeller(async(req , res , next) => {
