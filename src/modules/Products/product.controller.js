@@ -427,6 +427,14 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
             .sharpen(2, 1, 1) // Sharpen the image (adjust parameters if necessary)
             .toFile(outputPath); // Save to file
   };
+  const cutStringAtNewline = (inputString) => {
+    const newlineIndex = inputString.indexOf('\n');
+    if (newlineIndex === -1) {
+        // If no newline character is found, return the whole string
+        return inputString;
+    }
+    return inputString.substring(0, newlineIndex);
+  };
   const { imageLang } = req.query;
   const inputPath = `./uploads/${req.file.originalname}`;
   const outputPath = `./uploads/preprocessed_${req.file.originalname}`;
@@ -445,10 +453,10 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
     fs.unlinkSync(outputPath);
     const products = await productModel.find({
       $or: [
-        { title: { $regex:text, $options: "i" } },
-        { desc: { $regex:text, $options: "i" } },
-        { arTitle: { $regex:text, $options: "i" } },
-        { arDesc: { $regex:text, $options: "i" } },
+        { title: { $regex:cutStringAtNewline(text), $options: "i" } },
+        { desc: { $regex:cutStringAtNewline(text), $options: "i" } },
+        { arTitle: { $regex:cutStringAtNewline(text), $options: "i" } },
+        { arDesc: { $regex:cutStringAtNewline(text), $options: "i" } },
       ],
     }).populate([
       {
