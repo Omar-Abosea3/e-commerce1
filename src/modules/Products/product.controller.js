@@ -410,29 +410,38 @@ export const filterProducts = asyncHandeller(async (req, res, next) => {
   console.log(productsLength.length , req.query.size);
   return res.status(200).json({ message: "success", products , numOfPages:Math.ceil(productsLength.length/parseInt(req.query.size)) });
 });
-
-export const searchProductWithTextFromImage = asyncHandeller(async( req , res , next )=>{
-  const preprocessImage = async (inputPath, outputPath) => {
-    const image = sharp(inputPath);
-        
-        // Get metadata to determine resizing dimensions
-        const metadata = await image.metadata();
-        const targetWidth = metadata.width > 1000 ? 1000 : metadata.width; // Adjust target width as needed
-        
-        // Processing the image
+const preprocessImage = async (inputPath, outputPath , type) => {
+  const image = sharp(inputPath);
+      // Get metadata to determine resizing dimensions
+      const metadata = await image.metadata();
+      const targetWidth = metadata.width > 1000 ? 1000 : metadata.width; // Adjust target width as needed
+      
+      // Processing the image
+      if(type == 'text'){
         await image
-            .resize({ width: targetWidth }) // Resize to a maximum width
-            .grayscale() // Convert to grayscale
-            .modulate({ 
-              contrast: 2, // Increase contrast
-              }) // Enhance brightness and contrast
-            .median(3) // Optional: Reduce noise with a median filter
-            .sharpen(2, 1, 1) // Sharpen the image (adjust parameters if necessary)
+        .resize({ width: targetWidth }) // Resize to a maximum width
+        .grayscale() // Convert to grayscale
+        .modulate({ 
+          contrast: 2, // Increase contrast
+          }) // Enhance brightness and contrast
+        .median(3) // Optional: Reduce noise with a median filter
+        .sharpen(2, 1, 1) // Sharpen the image (adjust parameters if necessary)
+        .toFile(outputPath); // Save to file
+      }else{
+        await image
+        .resize({ width: targetWidth }) // Resize to a maximum width
+        // .grayscale() // Convert to grayscale
+        .modulate({ 
+          contrast: 2, // Increase contrast
+          }) // Enhance brightness and contrast
+        .median(3) // Optional: Reduce noise with a median filter
+        .sharpen(2, 1, 1) // Sharpen the image (adjust parameters if necessary)
+        .toFile(outputPath); // Save to file
+      }
           
-            // .threshold(100) // Apply binary thresholding
-            .toFile(outputPath); // Save to file
-            
-  };
+};
+export const searchProductWithTextFromImage = asyncHandeller(async( req , res , next )=>{
+ 
   const cutStringAtNewline = (inputString) => {
     const newlineIndex = inputString.indexOf('\n');
     if (newlineIndex === -1) {
@@ -446,7 +455,7 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
   const outputPath = `./uploads/preprocessed_${req.file.originalname}`;
 
     // Preprocess the image
-    await preprocessImage(inputPath, outputPath);
+    await preprocessImage(inputPath, outputPath , 'text');
   console.log(req.file);
     const image2 = fs.readFileSync(outputPath, 
     {
@@ -455,8 +464,8 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
 
     const { data : {text}} = await Tesseract.recognize(image2 , imageLang , { logger: m => console.log(m)  } );
     console.log(text);
-    // fs.unlinkSync(inputPath);
-    // fs.unlinkSync(outputPath);
+    fs.unlinkSync(inputPath);
+    fs.unlinkSync(inputPath);
     const products = await productModel.find({
       $or: [
         { title: { $regex:cutStringAtNewline(text), $options: "i" } },
@@ -489,7 +498,12 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
 });
 
 export const searchProductsWithImage = asyncHandeller(async(req , res , next) => {
-  const image = fs.readFileSync(`./uploads/${req.file.originalname}`, { encoding: null });
+  const inputPath = `./uploads/${req.file.originalname}`;
+  const outputPath = `./uploads/preprocessed_${req.file.originalname}`;
+
+    // Preprocess the image
+    await preprocessImage(inputPath, outputPath , 'image');
+  const image = fs.readFileSync(outputPath, { encoding: null });
   if (!image) {
     return next(new Error('Please upload a photo', { cause: 400 }));
   }
@@ -497,7 +511,7 @@ export const searchProductsWithImage = asyncHandeller(async(req , res , next) =>
   const blob = new Blob([image], { type: req.file.mimetype });
   formData.append('image', blob, req.file.originalname);
 
-  const {data} = await axios.post('https://7241-156-210-191-139.ngrok-free.app/predictTourismAPI', formData , {
+  const {data} = await axios.post('https://5632-41-199-20-136.ngrok-free.app/predictTourismAPI', formData , {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -506,7 +520,8 @@ export const searchProductsWithImage = asyncHandeller(async(req , res , next) =>
     return next(new Error(data.error , {cause:400}));
   }
   console.log(data);
-  fs.unlinkSync(`./uploads/${req.file.originalname}`);
+  fs.unlinkSync(inputPath);
+  fs.unlinkSync(inputPath);
   const subCategory = await subCategoryModel.findOne(
       { name: { $regex: data.name, $options: "i" } },
    ).populate([
