@@ -487,11 +487,11 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
         select:'name image'
       }
     ]).select('title arTitle desc arDesc slug arSlug colors sizes price priceAfterDiscount brandId rate images categoryId subCategoryId');
-    const relatedProducts = [];
+    // const relatedProducts = [];
  
 
-    if(products.length == 0 && relatedProducts.length == 0){
-      return next(new Error("no products founded", { cause: 404 }));
+    if(products.length === 0){
+      return next(new Error(`no products founded of ${cutStringAtNewline(text)}`, { cause: 404 }));
     } 
 
     return res.status(200).json({message : 'success' , products , text:text  });
