@@ -464,8 +464,8 @@ export const searchProductWithTextFromImage = asyncHandeller(async( req , res , 
 
     const { data : {text}} = await Tesseract.recognize(image2 , imageLang , { logger: m => console.log(m)  } );
     console.log(text);
-    fs.unlinkSync(inputPath);
-    fs.unlinkSync(inputPath);
+    // fs.unlinkSync(inputPath);
+    // fs.unlinkSync(inputPath);
     const products = await productModel.find({
       $or: [
         { title: { $regex:cutStringAtNewline(text), $options: "i" } },
