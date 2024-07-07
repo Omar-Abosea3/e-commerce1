@@ -30,7 +30,19 @@ const orderSchema = new Schema({
         finalPrice:{
             type:Number,
             required:true
-        }
+        },
+        images:[
+            {
+                secure_url:{
+                    type:String,
+                    required:true
+                },
+                public_id:{
+                    type:String,
+                    required:true
+                }
+            }
+        ]
     }],
     supTotal:{
         type:Number,

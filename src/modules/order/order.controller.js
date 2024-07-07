@@ -58,6 +58,7 @@ export const createOrder = asyncHandeller(async(req , res , next) => {
       title: isProductValid.title,
       price: isProductValid.priceAfterDiscount,
       finalPrice: isProductValid.priceAfterDiscount * quantity,
+      images : isProductValid.images
     };
     products.push(productObject);
 
@@ -265,6 +266,7 @@ export const fromCartToOrder = asyncHandeller(async (req, res, next) => {
       title: productExist.title,
       price: productExist.priceAfterDiscount,
       finalPrice: productExist.priceAfterDiscount * product.quantity,
+      images:productExist.images
     });
   }
   const orderObject = {
