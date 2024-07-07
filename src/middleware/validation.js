@@ -44,7 +44,7 @@ export const generalFields = {
         "string.base" : "this must be a string",
         "any.only": "password and repassword must be matched"
     }),
-    OTP:joi.number().min(4),
+    OTP:joi.string().max(6),
     firstName : joi.string().min(4).max(20).messages({
         'any.required':"firstName is required",
         "string.min" : "at least 4 charachters required",
