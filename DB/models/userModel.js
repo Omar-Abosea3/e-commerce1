@@ -67,7 +67,7 @@ const userSchema = new Schema({
         default:'offline',
         enum:['online' , 'offline']
     },
-    OTP:Number,
+    OTP:String,
     tokens:[String],
     provider:{
         type:String,
