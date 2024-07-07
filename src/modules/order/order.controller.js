@@ -191,9 +191,9 @@ export const createOrder = asyncHandeller(async(req , res , next) => {
         country: "Egypt",
       },
     };
-    const orderQr = await qrCodeFunction({
-      data: { orderId: order._id, products: order.products },
-    });
+    // const orderQr = await qrCodeFunction({
+    //   data: { orderId: order._id, products: order.products },
+    // });
     // await createInvoice(orderInvoice, `${orderCode}.pdf`);
     await sendEmail({
       to: req.user.email,
@@ -359,9 +359,9 @@ export const fromCartToOrder = asyncHandeller(async (req, res, next) => {
       country: "Egypt",
     },
   };
-  const orderQr = await qrCodeFunction({
-    data: { orderId: order._id, products: order.products },
-  });
+  // const orderQr = await qrCodeFunction({
+  //   data: { orderId: order._id, products: order.products },
+  // });
   // await createInvoice(orderInvoice, `${orderCode}.pdf`);
   await sendEmail({
     to: req.user.email,
